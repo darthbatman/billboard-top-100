@@ -1,0 +1,116 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files\\nodejs\\node.exe',
+1 verbose cli   'C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'publish' ]
+2 info using npm@3.8.3
+3 info using node@v5.10.1
+4 verbose publish [ '.' ]
+5 silly cache add args [ '.', null ]
+6 verbose cache add spec .
+7 silly cache add parsed spec Result {
+7 silly cache add   raw: '.',
+7 silly cache add   scope: null,
+7 silly cache add   name: null,
+7 silly cache add   rawSpec: '.',
+7 silly cache add   spec: 'C:\\Rishi\\Programming\\NodeJS\\top100Test\\PKGD',
+7 silly cache add   type: 'directory' }
+8 verbose addLocalDirectory C:\Users\darth\AppData\Roaming\npm-cache\billboard-top-100\1.0.0\package.tgz not in flight; packing
+9 verbose correctMkdir C:\Users\darth\AppData\Roaming\npm-cache correctMkdir not in flight; initializing
+10 info lifecycle billboard-top-100@1.0.0~prepublish: billboard-top-100@1.0.0
+11 silly lifecycle billboard-top-100@1.0.0~prepublish: no script for prepublish, continuing
+12 verbose tar pack [ 'C:\\Users\\darth\\AppData\\Roaming\\npm-cache\\billboard-top-100\\1.0.0\\package.tgz',
+12 verbose tar pack   'C:\\Rishi\\Programming\\NodeJS\\top100Test\\PKGD' ]
+13 verbose tarball C:\Users\darth\AppData\Roaming\npm-cache\billboard-top-100\1.0.0\package.tgz
+14 verbose folder C:\Rishi\Programming\NodeJS\top100Test\PKGD
+15 verbose addLocalTarball adding from inside cache C:\Users\darth\AppData\Roaming\npm-cache\billboard-top-100\1.0.0\package.tgz
+16 verbose correctMkdir C:\Users\darth\AppData\Roaming\npm-cache correctMkdir not in flight; initializing
+17 silly cache afterAdd billboard-top-100@1.0.0
+18 verbose afterAdd C:\Users\darth\AppData\Roaming\npm-cache\billboard-top-100\1.0.0\package\package.json not in flight; writing
+19 verbose correctMkdir C:\Users\darth\AppData\Roaming\npm-cache correctMkdir not in flight; initializing
+20 verbose afterAdd C:\Users\darth\AppData\Roaming\npm-cache\billboard-top-100\1.0.0\package\package.json written
+21 silly publish { name: 'billboard-top-100',
+21 silly publish   version: '1.0.0',
+21 silly publish   description: 'Gets the top 100 songs from Billboard\'s "The Hot 100"',
+21 silly publish   main: 'billboard-top-100.js',
+21 silly publish   dependencies:
+21 silly publish    { cheerio: '^0.20.0',
+21 silly publish      express: '^4.13.4',
+21 silly publish      request: '^2.72.0',
+21 silly publish      searchitunes: '^2.2.1' },
+21 silly publish   devDependencies: {},
+21 silly publish   scripts: { test: 'echo "Error: no test specified" && exit 1' },
+21 silly publish   repository:
+21 silly publish    { type: 'git',
+21 silly publish      url: 'git+https://github.com/darthbatman/billboard-top-100.git' },
+21 silly publish   keywords: [ 'billboard', 'top', '100', 'songs', 'music' ],
+21 silly publish   author:
+21 silly publish    { name: 'Rishi Masand',
+21 silly publish      email: 'darthanakin44@gmail.com',
+21 silly publish      url: 'https://github.com/darthbatman' },
+21 silly publish   license: 'MIT',
+21 silly publish   bugs: { url: 'https://github.com/darthbatman/billboard-top-100/issues' },
+21 silly publish   homepage: 'https://github.com/darthbatman/billboard-top-100#readme',
+21 silly publish   readme: '# billboard-top-100\r\nNode.js API to retrieve top 100 songs from Billboard\'s "The Hot 100"\r\n\r\n# install\r\n\r\n```\r\nnpm install billboard-top-100\r\n```\r\n\r\n# example\r\n\r\n```js\r\nvar billboard = require("billboard-top-100");\r\n\r\nbillboard(function(songs){\r\n\tconsole.log(songs); //prints array of top 100 songs\r\n\tconsole.log(songs[3]); //prints song with rank: 4\r\n\tconsole.log(songs[0].title); //prints title of top song\r\n\tconsole.log(songs[0].artist); //prints artist of top songs\r\n\tconsole.log(songs[0].rank) //prints rank of top song (1)\r\n});\r\n```\r\n# api\r\n\r\n### songs\r\n\r\nType: `array`\r\n\r\nSong objects.\r\n\r\n### songObject.rank\r\n\r\nType: `number`\r\n\r\nRank of song on charts.\r\n\r\n### songObject.title\r\n\r\nType: `string`\r\n\r\nTitle of song.\r\n\r\n### songObject.artist\r\n\r\nType: `string`\r\n\r\nName of artist of song.\r\n\r\n# license\r\n\r\nMIT © [Rishi Masand](https://github.com/darthbatman)\r\n',
+21 silly publish   readmeFilename: 'README.md',
+21 silly publish   gitHead: 'e77b2af67af565a876ad340a1626e2532f4bc2d3',
+21 silly publish   _id: 'billboard-top-100@1.0.0',
+21 silly publish   _shasum: 'b64a84740a74761d7696ab96595bdc47aeaf1239',
+21 silly publish   _from: '.' }
+22 verbose getPublishConfig undefined
+23 silly mapToRegistry name billboard-top-100
+24 silly mapToRegistry using default registry
+25 silly mapToRegistry registry https://registry.npmjs.org/
+26 silly mapToRegistry data Result {
+26 silly mapToRegistry   raw: 'billboard-top-100',
+26 silly mapToRegistry   scope: null,
+26 silly mapToRegistry   name: 'billboard-top-100',
+26 silly mapToRegistry   rawSpec: '',
+26 silly mapToRegistry   spec: 'latest',
+26 silly mapToRegistry   type: 'tag' }
+27 silly mapToRegistry uri https://registry.npmjs.org/billboard-top-100
+28 verbose publish registryBase https://registry.npmjs.org/
+29 silly publish uploading C:\Users\darth\AppData\Roaming\npm-cache\billboard-top-100\1.0.0\package.tgz
+30 verbose request uri https://registry.npmjs.org/billboard-top-100
+31 verbose request sending authorization for write operation
+32 info attempt registry request try #1 at 12:35:22 AM
+33 verbose request using bearer token for auth
+34 verbose request id db7713eddb5c786e
+35 http request PUT https://registry.npmjs.org/billboard-top-100
+36 http 403 https://registry.npmjs.org/billboard-top-100
+37 verbose headers { 'content-type': 'application/json',
+37 verbose headers   'cache-control': 'max-age=300',
+37 verbose headers   'content-length': '95',
+37 verbose headers   'accept-ranges': 'bytes',
+37 verbose headers   date: 'Sat, 28 May 2016 04:35:18 GMT',
+37 verbose headers   via: '1.1 varnish',
+37 verbose headers   connection: 'keep-alive',
+37 verbose headers   'x-served-by': 'cache-iad2135-IAD',
+37 verbose headers   'x-cache': 'MISS',
+37 verbose headers   'x-cache-hits': '0',
+37 verbose headers   'x-timer': 'S1464410117.827658,VS0,VE615',
+37 verbose headers   vary: 'Accept-Encoding' }
+38 verbose request invalidating C:\Users\darth\AppData\Roaming\npm-cache\registry.npmjs.org\billboard-top-100 on PUT
+39 error publish Failed PUT 403
+40 verbose stack Error: "You cannot publish over the previously published version 1.0.0." : billboard-top-100
+40 verbose stack     at makeError (C:\Program Files\nodejs\node_modules\npm\node_modules\npm-registry-client\lib\request.js:264:12)
+40 verbose stack     at CachingRegistryClient.<anonymous> (C:\Program Files\nodejs\node_modules\npm\node_modules\npm-registry-client\lib\request.js:252:14)
+40 verbose stack     at Request._callback (C:\Program Files\nodejs\node_modules\npm\node_modules\npm-registry-client\lib\request.js:172:14)
+40 verbose stack     at Request.self.callback (C:\Program Files\nodejs\node_modules\npm\node_modules\request\request.js:199:22)
+40 verbose stack     at emitTwo (events.js:100:13)
+40 verbose stack     at Request.emit (events.js:185:7)
+40 verbose stack     at Request.<anonymous> (C:\Program Files\nodejs\node_modules\npm\node_modules\request\request.js:1036:10)
+40 verbose stack     at emitOne (events.js:95:20)
+40 verbose stack     at Request.emit (events.js:182:7)
+40 verbose stack     at IncomingMessage.<anonymous> (C:\Program Files\nodejs\node_modules\npm\node_modules\request\request.js:963:12)
+41 verbose statusCode 403
+42 verbose pkgid billboard-top-100
+43 verbose cwd C:\Rishi\Programming\NodeJS\top100Test\PKGD
+44 error Windows_NT 10.0.10586
+45 error argv "C:\\Program Files\\nodejs\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "publish"
+46 error node v5.10.1
+47 error npm  v3.8.3
+48 error code E403
+49 error "You cannot publish over the previously published version 1.0.0." : billboard-top-100
+50 error If you need help, you may report this error at:
+50 error     <https://github.com/npm/npm/issues>
+51 verbose exit [ 1, true ]

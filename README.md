@@ -7,7 +7,7 @@ Node.js API to retrieve top 100 songs from Billboard's "The Hot 100"
 npm install billboard-top-100
 ```
 
-# examples
+# example
 
 ```js
 var billboard = require("billboard-top-100");

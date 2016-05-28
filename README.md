@@ -10,7 +10,7 @@ npm install billboard-top-100
 # examples
 
 ```js
-var billboard = require("billboard-top-100.js");
+var billboard = require("billboard-top-100");
 
 billboard(function(songs){
 	console.log(songs); //prints array of top 100 songs

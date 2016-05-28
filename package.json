@@ -1,0 +1,33 @@
+{
+  "name": "billboard-top-100",
+  "version": "1.0.0",
+  "description": "Gets the top 100 songs from Billboard's \"The Hot 100\"",
+  "main": "billboard-top-100.js",
+  "dependencies": {
+    "cheerio": "^0.20.0",
+    "express": "^4.13.4",
+    "request": "^2.72.0",
+    "searchitunes": "^2.2.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/darthbatman/billboard-top-100.git"
+  },
+  "keywords": [
+    "billboard",
+    "top",
+    "100",
+    "songs",
+    "music"
+  ],
+  "author": "Rishi Masand <darthanakin44@gmail.com> (https://github.com/darthbatman)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/darthbatman/billboard-top-100/issues"
+  },
+  "homepage": "https://github.com/darthbatman/billboard-top-100#readme"
+}

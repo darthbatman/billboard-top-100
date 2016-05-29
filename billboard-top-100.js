@@ -1,5 +1,3 @@
-var app = require("express")();
-var http = require("http").Server(app);
 var request = require("request");
 var cheerio = require("cheerio");
 

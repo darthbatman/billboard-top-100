@@ -7,6 +7,7 @@ var getTop100 = function(cb){
 
 	var songsArray = [];
 	var artistsArray = [];
+  var coversArray = [];
 
 	request("http://www.billboard.com/charts/hot-100", function(error, response, html){
 
@@ -28,13 +29,27 @@ var getTop100 = function(cb){
     			}
 				artistsArray.push(artistName);
 			});
+			
+			$('.chart-row__image').each(function(index){
+				var style = $(this).attr("style");
+				if(style){
+					var songCover= style.replace("background-image: url(http://","").replace(")","");
+				}else{
+					var data = $(this).attr("data-imagesrc");
+					if(data){
+						var songCover= data.replace("http://","");
+					}	
+				}
+				coversArray.push(songCover);
+			});
 
 			for (var i = 0; i < songsArray.length; i++){
 
 				soArray.push({
 					"rank": i + 1,
 					"title": songsArray[i],
-					"artist": artistsArray[i]
+					"artist": artistsArray[i],
+					"cover":coversArray[i]
 				});
 
 				if (i == songsArray.length - 1){

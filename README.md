@@ -18,6 +18,7 @@ billboard(function(songs){
 	console.log(songs[0].title); //prints title of top song
 	console.log(songs[0].artist); //prints artist of top songs
 	console.log(songs[0].rank) //prints rank of top song (1)
+	console.log(song[0].cover) //prints URL for Billboard cover image
 });
 ```
 # api

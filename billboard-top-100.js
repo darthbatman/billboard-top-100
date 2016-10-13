@@ -3,11 +3,11 @@ var cheerio = require("cheerio");
 
 var getTop100 = function(cb){
 
-	var soArray = [];
+	var songs = [];
 
-	var songsArray = [];
-	var artistsArray = [];
-  var coversArray = [];
+	var titles = [];
+	var artists = [];
+  	var covers = [];
 
 	request("http://www.billboard.com/charts/hot-100", function(error, response, html){
 
@@ -17,7 +17,7 @@ var getTop100 = function(cb){
 				var songName = $(this).text().replace(/\r?\n|\r/g, "").replace(/\s+/g, ' ');
 				while(songName[0] === ' ')
     				songName = songName.substr(1);
-				songsArray.push(songName);
+				titles.push(songName);
 			});
 
 			$('.chart-row__artist').each(function(index){
@@ -27,7 +27,7 @@ var getTop100 = function(cb){
     			if (artistName[artistName.length - 1] == ' '){
     				artistName = artistName.substring(0, artistName.length - 1);
     			}
-				artistsArray.push(artistName);
+				artists.push(artistName);
 			});
 			
 			$('.chart-row__image').each(function(index){
@@ -37,23 +37,23 @@ var getTop100 = function(cb){
 				}else{
 					var data = $(this).attr("data-imagesrc");
 					if(data){
-						var songCover= data.replace("http://","");
+						var songCover = data.replace("http://","");
 					}	
 				}
-				coversArray.push(songCover);
+				covers.push(songCover);
 			});
 
-			for (var i = 0; i < songsArray.length; i++){
+			for (var i = 0; i < titles.length; i++){
 
-				soArray.push({
+				songs.push({
 					"rank": i + 1,
-					"title": songsArray[i],
-					"artist": artistsArray[i],
-					"cover":coversArray[i]
+					"title": titles[i],
+					"artist": artists[i],
+					"cover":covers[i]
 				});
 
-				if (i == songsArray.length - 1){
-					cb (soArray);
+				if (i == titles.length - 1){
+					cb (songs);
 				}
 
 			}

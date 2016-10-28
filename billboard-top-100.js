@@ -8,16 +8,25 @@ var getTop100 = function(cb){
 	var titles = [];
 	var artists = [];
   	var covers = [];
+	var position = [];
 
 	request("http://www.billboard.com/charts/hot-100", function(error, response, html){
 
 			var $ = cheerio.load(html);
 
-			$('.chart-row__song').each(function(index){
+			$('.chart-row__song').each(function(index, item){
 				var songName = $(this).text().replace(/\r?\n|\r/g, "").replace(/\s+/g, ' ');
 				while(songName[0] === ' ')
     				songName = songName.substr(1);
 				titles.push(songName);
+
+				$(item).closest('article').find('.chart-row__secondary > div').each(function(_, item) {
+					var positionInfo = {};
+					$(item).children('div').each(function(_, item) {
+						positionInfo[$('span:first-child', item).text()] = $('span:last-child', item).text()
+					});
+					position.push(positionInfo);
+				});
 			});
 
 			$('.chart-row__artist').each(function(index){
@@ -49,7 +58,8 @@ var getTop100 = function(cb){
 					"rank": i + 1,
 					"title": titles[i],
 					"artist": artists[i],
-					"cover":covers[i]
+					"cover": covers[i],
+					"position": position[i]
 				});
 
 				if (i == titles.length - 1){

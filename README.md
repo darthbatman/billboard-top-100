@@ -1,4 +1,4 @@
-# billboard-top-100
+﻿# billboard-top-100
 Node.js API to retrieve top 100 songs from Billboard's The Hot 100
 
 # install
@@ -51,7 +51,7 @@ Name of artist of song.
 
 Type: `object`
 
-Infomation of position from song.
+Position information of song.
 
 
 # license

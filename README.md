@@ -47,6 +47,13 @@ Type: `string`
 
 Name of artist of song.
 
+### songObject.position
+
+Type: `object`
+
+Infomation of position from song.
+
+
 # license
 
 MIT © [Rishi Masand](https://github.com/darthbatman)

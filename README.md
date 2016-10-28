@@ -51,7 +51,7 @@ Name of artist of song.
 
 Type: `object`
 
-Infomation of Position from song.
+Infomation of position from song.
 
 
 # license

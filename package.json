@@ -1,6 +1,6 @@
 {
   "name": "billboard-top-100",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "description": "Gets the top 100 songs from Billboard's \"The Hot 100\"",
   "main": "billboard-top-100.js",
   "dependencies": {

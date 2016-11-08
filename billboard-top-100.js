@@ -1,7 +1,12 @@
 var request = require("request");
 var cheerio = require("cheerio");
 
-var getTop100 = function(cb){
+var getTop100 = function(date, cb){
+
+	if (typeof date === 'function'){
+		cb = date;
+		date = '';
+	}
 
 	var songs = [];
 
@@ -10,7 +15,7 @@ var getTop100 = function(cb){
   	var covers = [];
 	var position = [];
 
-	request("http://www.billboard.com/charts/hot-100", function(error, response, html){
+	request("http://www.billboard.com/charts/hot-100/" + date, function(error, response, html){
 
 			var $ = cheerio.load(html);
 

@@ -12,14 +12,28 @@ npm install billboard-top-100
 ```js
 var billboard = require("billboard-top-100");
 
+// date defaults to saturday of this week
+
 billboard(function(songs){
 	console.log(songs); //prints array of top 100 songs
 	console.log(songs[3]); //prints song with rank: 4
 	console.log(songs[0].title); //prints title of top song
 	console.log(songs[0].artist); //prints artist of top songs
 	console.log(songs[0].rank) //prints rank of top song (1)
-	console.log(song[0].cover) //prints URL for Billboard cover image
+	console.log(song[0].cover) //prints URL for Billboard cover image of top song
 });
+
+// date format YYYY-MM-DD
+
+billboard('2016-08-27', function(songs){
+	console.log(songs); //prints array of top 100 songs for week of August 27, 2016
+	console.log(songs[3]); //prints song with rank: 4 for week of August 27, 2016
+	console.log(songs[0].title); //prints title of top song for week of August 27, 2016
+	console.log(songs[0].artist); //prints artist of top songs for week of August 27, 2016
+	console.log(songs[0].rank) //prints rank of top song (1) for week of August 27, 2016
+	console.log(song[0].cover) //prints URL for Billboard cover image of top song for week of August 27, 2016
+});
+
 ```
 # api
 

@@ -61,6 +61,12 @@ Type: `string`
 
 Name of artist of song.
 
+### songObject.cover
+
+Type: `string`
+
+Cover image URL of song.
+
 ### songObject.position
 
 Type: `object`

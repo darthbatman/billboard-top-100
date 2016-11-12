@@ -48,11 +48,10 @@ billboard('greatest-billboard-200-albums', function(songs){
 ```
 # charts
 
-Chart: argument
-
 ## Greatest of All Time
 
 Greatest of All Time Billboard 200 Albums: 'greatest-billboard-200-albums'
+
 Greatest of All Time Billboard 200 Artists: 'greatest-billboard-200-artists'
 Greatest of All Time Hot 100 Artists: 'greatest-hot-100-artists'
 Greatest of All Time Hot 100 Singles: 'greatest-hot-100-singles'

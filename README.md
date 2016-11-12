@@ -25,7 +25,7 @@ billboard('hot-100', function(songs){
 
 // date format YYYY-MM-DD
 
-billboard('hot-100', 2016-08-27', function(songs){
+billboard('hot-100', '2016-08-27', function(songs){
 	console.log(songs); //prints array of top 100 songs for week of August 27, 2016
 	console.log(songs[3]); //prints song with rank: 4 for week of August 27, 2016
 	console.log(songs[0].title); //prints title of top song for week of August 27, 2016

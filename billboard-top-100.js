@@ -57,22 +57,27 @@ var getChart = function(chart, date, cb){
 				covers.push(songCover);
 			});
 
-			for (var i = 0; i < titles.length; i++){
+			if (titles.length > 1){
+				for (var i = 0; i < titles.length; i++){
 
-				songs.push({
-					"rank": i + 1,
-					"title": titles[i],
-					"artist": artists[i],
-					"cover": covers[i],
-					"position": position[i]
-				});
+					songs.push({
+						"rank": i + 1,
+						"title": titles[i],
+						"artist": artists[i],
+						"cover": covers[i],
+						"position": position[i]
+					});
 
-				if (i == titles.length - 1){
-					cb (songs);
+					if (i == titles.length - 1){
+						cb (songs);
+					}
+
 				}
-
 			}
-
+			else {
+				cb ([], "no chart found");
+			}
+			
 	});
 
 }

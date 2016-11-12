@@ -326,9 +326,11 @@ Next Big Sound: 'next-big-sound-25'
 
 Type: `function`
 
-```chart``` <string>
-```date``` <string> ('all time' charts will not accept a date)
-```callback``` <function>
+```chart``` string
+
+```date``` string ('all time' charts will not accept a date)
+
+```callback``` function
 
 Returns array of songs/albums/artists in chart. 
 
@@ -365,6 +367,12 @@ Cover image URL of song.
 ### songObject.position
 
 Type: `object`
+
+```Last Week``` string (position of song on chart last week)
+
+```Peak Position``` string (peak position of song on chart)
+
+```Wks on Chart``` string (number of weeks song has been on chart)
 
 Position information of song.
 

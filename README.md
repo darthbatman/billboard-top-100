@@ -222,6 +222,8 @@ Regional Mexican Albums: 'regional-mexican-albums'
 
 Latin Pop Albums: 'latin-pop-albums'
 
+Top Latin Albums: 'latin-albums'
+
 ## Christian/Gospel
 
 Hot Christian Songs: 'christian-songs'
@@ -235,8 +237,6 @@ Tropical Albums: 'tropical-albums'
 Christian Streaming Songs: 'christian-streaming-songs'
 
 Top Christian Albums: 'christian-albums'
-
-Top Latin Albums: 'latin-albums'
 
 Hot Gospel Songs: 'gospel-songs'
 

@@ -14,7 +14,8 @@ var billboard = require("billboard-top-100").getChart;
 
 // date defaults to saturday of this week
 
-billboard('hot-100', function(songs){
+billboard('hot-100', function(songs, err){
+	if (err) console.log(err);
 	console.log(songs); //prints array of top 100 songs
 	console.log(songs[3]); //prints song with rank: 4
 	console.log(songs[0].title); //prints title of top song
@@ -25,7 +26,8 @@ billboard('hot-100', function(songs){
 
 // date format YYYY-MM-DD
 
-billboard('hot-100', '2016-08-27', function(songs){
+billboard('hot-100', '2016-08-27', function(songs, err){
+	if (err) console.log(err);
 	console.log(songs); //prints array of top 100 songs for week of August 27, 2016
 	console.log(songs[3]); //prints song with rank: 4 for week of August 27, 2016
 	console.log(songs[0].title); //prints title of top song for week of August 27, 2016
@@ -36,7 +38,8 @@ billboard('hot-100', '2016-08-27', function(songs){
 
 // 'all time' chart
 
-billboard('greatest-billboard-200-albums', function(songs){
+billboard('greatest-billboard-200-albums', function(songs, err){
+	if (err) console.log(err);
 	console.log(songs); //prints array of top 200 albums
 	console.log(songs[3]); //prints album with rank: 4
 	console.log(songs[0].title); //prints title of top album

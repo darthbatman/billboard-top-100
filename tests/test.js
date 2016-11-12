@@ -1,5 +1,5 @@
-var billboard = require("../billboard-top-100.js");
+var billboard = require("../billboard-top-100.js").getChart;
 
-billboard('2016-08-27', function(songs){
+billboard('greatest-adult-pop-artists', '2016-08-27', function(songs){
 	console.log(songs);
 });

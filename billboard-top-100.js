@@ -100,22 +100,28 @@ var getChart = function(chart, date, cb){
  */
 var manifest = function(cb) {
 	request(baseUrl, function(error, response, html) {
+		var result = {};
 		if (error) {
-			cb([], error)
+			cb(result, error)
 			return;
 		}
 		var $ = cheerio.load(html);
-		var links = new Set();
 		var prefixOfLink = '/charts/';
-		$('#main-wrapper a').each(function(_, item) {
-			var address = $(item).attr('href') || '';
-			var startIndex = -1;
-			if ((startIndex = address.indexOf(prefixOfLink)) !== -1) {
-				links.add(address.substring(startIndex + prefixOfLink.length))
-			}
+
+		$('#main-wrapper :header').each(function(_, head) {
+			var links = new Set();
+			$(head).nextUntil(':header', ':has(a)').each(function(_, item) {
+				var address = $('a', item).attr('href') || '';
+				var startIndex = -1;
+				if ((startIndex = address.indexOf(prefixOfLink)) !== -1) {
+					links.add(address.substring(startIndex + prefixOfLink.length))
+				}
+			});
+			result[$(head).text()] = [...links];
+			links.clear();
 		});
 		if (typeof cb === 'function') {
-			cb([...links]);
+			cb(result);
 		}
 	});
 }

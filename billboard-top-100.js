@@ -3,14 +3,13 @@ var cheerio = require("cheerio");
 
 const baseUrl = "http://www.billboard.com/charts/";
 
+// list all data from requested chart
+
 var getChart = function(chart, date, cb){
 	var result;
 	if (typeof date === 'function'){
 		cb = date;
 		date = '';
-	} else if (typeof date === 'string') {
-		date = tunningDate(date);
-		result = {'chartTime': date};
 	}
 
 	var songs = [];
@@ -22,7 +21,7 @@ var getChart = function(chart, date, cb){
 	var positions = [];
 
 	request(baseUrl + chart + "/" + date, function(error, response, html){
-
+			console.log(baseUrl + chart + "/" + date);
 			var $ = cheerio.load(html);
 
 			$('.chart-row__song').each(function(index, item){
@@ -95,57 +94,36 @@ var getChart = function(chart, date, cb){
 
 }
 
-/**
- * list the available chart page
- */
-var manifest = function(cb) {
+// list the available charts
+
+var listCharts = function(cb) {
 	request(baseUrl, function(error, response, html) {
-		var result = {};
+		var charts = {};
 		if (error) {
-			cb(result, error)
+			cb(charts, error)
 			return;
 		}
 		var $ = cheerio.load(html);
 		var prefixOfLink = '/charts/';
 
 		$('#main-wrapper :header').each(function(_, head) {
-			var links = new Set();
+			var links = [];
 			$(head).nextUntil(':header', ':has(a)').each(function(_, item) {
 				var address = $('a', item).attr('href') || '';
 				var startIndex = -1;
 				if ((startIndex = address.indexOf(prefixOfLink)) !== -1) {
-					links.add(address.substring(startIndex + prefixOfLink.length))
+					links.push(address.substring(startIndex + prefixOfLink.length));
 				}
 			});
-			result[$(head).text()] = [...links];
-			links.clear();
+			charts[$(head).text()] = links;
 		});
 		if (typeof cb === 'function') {
-			cb(result);
+			cb(charts);
 		}
 	});
 }
 
-/**
- * allow any date
- * if the date which given by user is not saturday,
- * it will be automatically adjusted to the saturday of the last week 
- */
-function tunningDate(date) {
-	if (/\d{4}-\d{2}-\d{2}/.test(date)) {
-		var day = new Date(date);
-		var dayOfWeek = day.getDay();
-		var endOfWeek = dayOfWeek === 6;
-		var timestampOfDay = day.getTime();
-		if (!endOfWeek) {
-			var saturday = new Date(timestampOfDay - (dayOfWeek + 1) * 24 * 60 * 60 * 1000);
-			return saturday.toISOString().substring(0, 10);
-		}
-	}
-	return date;
-}
-
 module.exports = {
 	getChart,
-	manifest
+	listCharts
 }

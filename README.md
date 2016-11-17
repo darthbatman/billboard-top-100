@@ -48,7 +48,46 @@ billboard('greatest-billboard-200-albums', function(songs, err){
 	console.log(song[0].cover) //prints URL for Billboard cover image of top album
 });
 
+// list all available charts
+
+var listCharts = require('billboard-top-100').listCharts;
+
+listCharts(function(data){
+	console.log(data['Overall Popularity']); //prints larray of charts in 'Overall Popularity' category
+});
+
 ```
+
+# chart categories
+
+Greatest of All Time: 'Greatest of All Time'
+
+Overall Popularity: 'Overall Popularity'
+
+Breaking and Entering: 'Breaking and Entering'
+
+Pop: 'Pop'
+
+Country: 'Country'
+
+Rock: 'Rock'
+
+R&B/Hip-Hop: 'R&B/Hip-Hop'
+
+Dance/Electronic: 'Dance/Electronic'
+
+Latin: 'Latin'
+
+Christian/Gospel: 'Christian/Gospel'
+
+Holiday: 'Holiday'
+
+Additional Genres: 'Additional Genres'
+
+International: 'International'
+
+Web: 'Web'
+
 # charts
 
 ## Greatest of All Time
@@ -324,6 +363,12 @@ LyricFind U.S.: 'lyricfind-us'
 Next Big Sound: 'next-big-sound-25'
 
 # api
+
+### listCharts(callback)
+
+Type: `function`
+
+Returns object containing arrays of charts separated by category
 
 ### getChart(chart[, date], callback)
 

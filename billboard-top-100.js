@@ -1,22 +1,27 @@
 var request = require("request");
 var cheerio = require("cheerio");
 
-var getChart = function(chart, date, cb){
+const baseUrl = "http://www.billboard.com/charts/";
 
+var getChart = function(chart, date, cb){
+	var result;
 	if (typeof date === 'function'){
 		cb = date;
 		date = '';
+	} else if (typeof date === 'string') {
+		date = tunningDate(date);
+		result = {'chartTime': date};
 	}
 
 	var songs = [];
 
 	var titles = [];
 	var artists = [];
-  	var covers = [];
-  	var ranks = [];
+	var covers = [];
+	var ranks = [];
 	var positions = [];
 
-	request("http://www.billboard.com/charts/" + chart + "/" + date, function(error, response, html){
+	request(baseUrl + chart + "/" + date, function(error, response, html){
 
 			var $ = cheerio.load(html);
 
@@ -64,14 +69,17 @@ var getChart = function(chart, date, cb){
 
 			if (titles.length > 1){
 				for (var i = 0; i < titles.length; i++){
-
-					songs.push({
+					var song = {
 						"rank": ranks[i],
 						"title": titles[i],
 						"artist": artists[i],
-						"cover": covers[i],
-						"position": positions[i]
-					});
+						"cover": covers[i]
+					};
+					var positionInfo = positions[i];
+					if (positionInfo) {
+						song['position'] = positionInfo;
+					}
+					songs.push(song);
 
 					if (i == titles.length - 1){
 						cb (songs);
@@ -87,4 +95,57 @@ var getChart = function(chart, date, cb){
 
 }
 
-module.exports.getChart = getChart;
+/**
+ * list the available chart page
+ */
+var manifest = function(cb) {
+	request(baseUrl, function(error, response, html) {
+		var result = {};
+		if (error) {
+			cb(result, error)
+			return;
+		}
+		var $ = cheerio.load(html);
+		var prefixOfLink = '/charts/';
+
+		$('#main-wrapper :header').each(function(_, head) {
+			var links = new Set();
+			$(head).nextUntil(':header', ':has(a)').each(function(_, item) {
+				var address = $('a', item).attr('href') || '';
+				var startIndex = -1;
+				if ((startIndex = address.indexOf(prefixOfLink)) !== -1) {
+					links.add(address.substring(startIndex + prefixOfLink.length))
+				}
+			});
+			result[$(head).text()] = [...links];
+			links.clear();
+		});
+		if (typeof cb === 'function') {
+			cb(result);
+		}
+	});
+}
+
+/**
+ * allow any date
+ * if the date which given by user is not saturday,
+ * it will be automatically adjusted to the saturday of the last week 
+ */
+function tunningDate(date) {
+	if (/\d{4}-\d{2}-\d{2}/.test(date)) {
+		var day = new Date(date);
+		var dayOfWeek = day.getDay();
+		var endOfWeek = dayOfWeek === 6;
+		var timestampOfDay = day.getTime();
+		if (!endOfWeek) {
+			var saturday = new Date(timestampOfDay - (dayOfWeek + 1) * 24 * 60 * 60 * 1000);
+			return saturday.toISOString().substring(0, 10);
+		}
+	}
+	return date;
+}
+
+module.exports = {
+	getChart,
+	manifest
+}

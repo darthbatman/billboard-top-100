@@ -13,7 +13,8 @@ var getChart = function(chart, date, cb){
 	var titles = [];
 	var artists = [];
   	var covers = [];
-	var position = [];
+  	var ranks = [];
+	var positions = [];
 
 	request("http://www.billboard.com/charts/" + chart + "/" + date, function(error, response, html){
 
@@ -30,8 +31,12 @@ var getChart = function(chart, date, cb){
 					$(item).children('div').each(function(_, item) {
 						positionInfo[$('span:first-child', item).text()] = $('span:last-child', item).text()
 					});
-					position.push(positionInfo);
+					positions.push(positionInfo);
 				});
+			});
+
+			$('.chart-row__current-week').each(function(index){
+				ranks.push($(this).text().replace(/\r?\n|\r/g, "").replace(/\s+/g, ' '));
 			});
 
 			$('.chart-row__artist').each(function(index){
@@ -61,11 +66,11 @@ var getChart = function(chart, date, cb){
 				for (var i = 0; i < titles.length; i++){
 
 					songs.push({
-						"rank": i + 1,
+						"rank": ranks[i],
 						"title": titles[i],
 						"artist": artists[i],
 						"cover": covers[i],
-						"position": position[i]
+						"position": positions[i]
 					});
 
 					if (i == titles.length - 1){

@@ -7,9 +7,11 @@
     "cheerio": "^0.20.0",
     "request": "^2.72.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "jshint": "^2.9.4"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/jshint/bin/jshint ./tests/test.js"
   },
   "repository": {
     "type": "git",

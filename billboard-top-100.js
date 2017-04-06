@@ -21,7 +21,7 @@ var getChart = function(chart, date, cb){
 	var positions = [];
 
 	request(baseUrl + chart + "/" + date, function(error, response, html){
-			console.log(baseUrl + chart + "/" + date);
+
 			var $ = cheerio.load(html);
 
 			$('.chart-row__song').each(function(index, item){

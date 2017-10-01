@@ -1,15 +1,17 @@
 {
   "name": "billboard-top-100",
-  "version": "2.0.4",
+  "version": "2.0.7",
   "description": "Gets the top songs, albums, and artists from Billboard's charts",
   "main": "billboard-top-100.js",
   "dependencies": {
     "cheerio": "^0.20.0",
     "request": "^2.72.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "jshint": "^2.9.4"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/jshint/bin/jshint ./tests/test.js"
   },
   "repository": {
     "type": "git",

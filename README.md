@@ -1,6 +1,12 @@
 ﻿# billboard-top-100
 Node.js API to retrieve top songs, albums, and artists from Billboard's charts
 
+[![https://nodei.co/npm/billboard-top-100.png?downloads=true&downloadRank=true&stars=true](https://nodei.co/npm/billboard-top-100.png?downloads=true&downloadRank=true)](https://www.npmjs.com/package/billboard-top-100)
+
+[![Build Status](https://travis-ci.org/darthbatman/billboard-top-100.svg?branch=master)](https://travis-ci.org/darthbatman/billboard-top-100)
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/darthbatman/billboard-top-100)
+
+
 # install
 
 ```
@@ -48,7 +54,46 @@ billboard('greatest-billboard-200-albums', function(songs, err){
 	console.log(song[0].cover) //prints URL for Billboard cover image of top album
 });
 
+// list all available charts
+
+var listCharts = require('billboard-top-100').listCharts;
+
+listCharts(function(data){
+	console.log(data['Overall Popularity']); //prints larray of charts in 'Overall Popularity' category
+});
+
 ```
+
+# chart categories
+
+Greatest of All Time: 'Greatest of All Time'
+
+Overall Popularity: 'Overall Popularity'
+
+Breaking and Entering: 'Breaking and Entering'
+
+Pop: 'Pop'
+
+Country: 'Country'
+
+Rock: 'Rock'
+
+R&B/Hip-Hop: 'R&B/Hip-Hop'
+
+Dance/Electronic: 'Dance/Electronic'
+
+Latin: 'Latin'
+
+Christian/Gospel: 'Christian/Gospel'
+
+Holiday: 'Holiday'
+
+Additional Genres: 'Additional Genres'
+
+International: 'International'
+
+Web: 'Web'
+
 # charts
 
 ## Greatest of All Time
@@ -324,6 +369,12 @@ LyricFind U.S.: 'lyricfind-us'
 Next Big Sound: 'next-big-sound-25'
 
 # api
+
+### listCharts(callback)
+
+Type: `function`
+
+Returns object containing arrays of charts separated by category
 
 ### getChart(chart[, date], callback)
 

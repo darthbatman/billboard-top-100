@@ -106,9 +106,9 @@ var listCharts = function(cb) {
 		var $ = cheerio.load(html);
 		var prefixOfLink = '/charts/';
 
-		$('#main-wrapper :header').each(function(_, head) {
+		$('#main h3').each(function(_, head) {
 			var links = [];
-			$(head).nextUntil(':header', ':has(a)').each(function(_, item) {
+			$(head).nextUntil('h3', ':has(a):not(:header)').each(function(_, item) {
 				var address = $('a', item).attr('href') || '';
 				var startIndex = -1;
 				if ((startIndex = address.indexOf(prefixOfLink)) !== -1) {

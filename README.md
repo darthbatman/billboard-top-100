@@ -27,7 +27,7 @@ billboard('hot-100', function(songs, err){
 	console.log(songs[0].title); //prints title of top song
 	console.log(songs[0].artist); //prints artist of top songs
 	console.log(songs[0].rank) //prints rank of top song (1)
-	console.log(song[0].cover) //prints URL for Billboard cover image of top song
+	console.log(songs[0].cover) //prints URL for Billboard cover image of top song
 });
 
 // date format YYYY-MM-DD
@@ -39,7 +39,7 @@ billboard('hot-100', '2016-08-27', function(songs, err){
 	console.log(songs[0].title); //prints title of top song for week of August 27, 2016
 	console.log(songs[0].artist); //prints artist of top songs for week of August 27, 2016
 	console.log(songs[0].rank) //prints rank of top song (1) for week of August 27, 2016
-	console.log(song[0].cover) //prints URL for Billboard cover image of top song for week of August 27, 2016
+	console.log(songs[0].cover) //prints URL for Billboard cover image of top song for week of August 27, 2016
 });
 
 // 'all time' chart
@@ -51,7 +51,7 @@ billboard('greatest-billboard-200-albums', function(songs, err){
 	console.log(songs[0].title); //prints title of top album
 	console.log(songs[0].artist); //prints artist of top songs
 	console.log(songs[0].rank) //prints rank of top album (1)
-	console.log(song[0].cover) //prints URL for Billboard cover image of top album
+	console.log(songs[0].cover) //prints URL for Billboard cover image of top album
 });
 
 // list all available charts
@@ -386,7 +386,7 @@ Type: `function`
 
 ```callback``` function
 
-Returns array of songs/albums/artists in chart. 
+Returns array of songs/albums/artists in chart.
 
 ### songs
 

@@ -55,13 +55,17 @@ var getChart = function(chart, date, cb){
 			
 			$('.chart-row__image').each(function(index){
 				var style = $(this).attr("style");
+				var songCover = "";
 				if(style){
-					var songCover= style.replace("background-image: url(http://","").replace(")","");
+					songCover= style.replace("background-image: url(http://","").replace(")","");
 				}else{
 					var data = $(this).attr("data-imagesrc");
 					if(data){
-						var songCover = data.replace("http://","");
+						songCover = data.replace("http://","");
 					}	
+				}
+				if (songCover.indexOf("background-image: url(") != -1) {
+					songCover = songCover.split("background-image: url(")[1];
 				}
 				covers.push(songCover);
 			});

@@ -3,6 +3,12 @@ var cheerio = require("cheerio");
 
 const baseUrl = "http://www.billboard.com/charts/";
 
+function toTitleCase(str) {
+    return str.replace(/\w\S*/g, function(txt){
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+}
+
 // list all data from requested chart
 
 var getChart = function(chart, date, cb){
@@ -24,50 +30,21 @@ var getChart = function(chart, date, cb){
 
 			var $ = cheerio.load(html);
 
-			$('.chart-row__song').each(function(index, item){
-				var songName = $(this).text().replace(/\r?\n|\r/g, "").replace(/\s+/g, ' ');
-				while(songName[0] === ' ')
-    				songName = songName.substr(1);
-				titles.push(songName);
-
-				$(item).closest('article').find('.chart-row__secondary > div').each(function(_, item) {
-					var positionInfo = {};
-					$(item).children('div').each(function(_, item) {
-						positionInfo[$('span:first-child', item).text()] = $('span:last-child', item).text()
-					});
-					positions.push(positionInfo);
-				});
-			});
-
-			$('.chart-row__current-week').each(function(index){
-				ranks.push($(this).text().replace(/\r?\n|\r/g, "").replace(/\s+/g, ' '));
-			});
-
-			$('.chart-row__artist').each(function(index){
-				var artistName = $(this).text().replace(/\r?\n|\r/g, "").replace(/\s+/g, ' ');
-				while(artistName[0] === ' ')
-    				artistName = artistName.substr(1);
-    			if (artistName[artistName.length - 1] == ' '){
-    				artistName = artistName.substring(0, artistName.length - 1);
-    			}
-				artists.push(artistName);
-			});
-			
-			$('.chart-row__image').each(function(index){
-				var style = $(this).attr("style");
-				var songCover = "";
-				if(style){
-					songCover= style.replace("background-image: url(http://","").replace(")","");
-				}else{
-					var data = $(this).attr("data-imagesrc");
-					if(data){
-						songCover = data.replace("http://","");
-					}	
+			covers.push(undefined); // top song has no cover image
+			$('.chart-list-item__image-wrapper').each(function(index, item){
+				var imageSrcAttrib = $(this).children()[1].attribs['data-srcset'];
+				if (imageSrcAttrib == undefined) {
+					imageSrcAttrib = $(this).children()[2].attribs['data-srcset'];
 				}
-				if (songCover.indexOf("background-image: url(") != -1) {
-					songCover = songCover.split("background-image: url(")[1];
-				}
+				var songCover = imageSrcAttrib.split(', ').slice(-1)[0].split(' ')[0];
 				covers.push(songCover);
+			});
+
+			$('.chart-list-item__title').each(function(index, item){
+				var item = $(this).parent().parent().parent().parent()[0].attribs;
+				titles.push(item['data-title']);
+				artists.push(item['data-artist']);
+				ranks.push(item['data-rank']);
 			});
 
 			if (titles.length > 1){
@@ -102,25 +79,20 @@ var getChart = function(chart, date, cb){
 
 var listCharts = function(cb) {
 	request(baseUrl, function(error, response, html) {
-		var charts = {};
+		var charts = [];
 		if (error) {
 			cb(charts, error)
 			return;
 		}
 		var $ = cheerio.load(html);
-		var prefixOfLink = '/charts/';
 
-		$('#main h3').each(function(_, head) {
-			var links = [];
-			$(head).nextUntil('h3', ':has(a):not(:header)').each(function(_, item) {
-				var address = $('a', item).attr('href') || '';
-				var startIndex = -1;
-				if ((startIndex = address.indexOf(prefixOfLink)) !== -1) {
-					links.push(address.substring(startIndex + prefixOfLink.length));
-				}
-			});
-			charts[$(head).text()] = links;
+		$('.chart-panel__link').each(function(index, item) {
+			var chartObject = {};
+			chartObject.chart = toTitleCase($(this)[0].attribs.href.replace('/charts/', '').replace(/-/g, ' '));
+			chartObject.link = $(this)[0].attribs.href;
+			charts.push(chartObject);
 		});
+
 		if (typeof cb === 'function') {
 			cb(charts);
 		}

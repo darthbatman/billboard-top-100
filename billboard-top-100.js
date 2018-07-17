@@ -62,13 +62,13 @@ var getChart = function(chart, date, cb){
 					songs.push(song);
 
 					if (i == titles.length - 1){
-						cb (songs);
+						cb (null, songs);
 					}
 
 				}
 			}
 			else {
-				cb ([], "no chart found");
+				cb ("No chart found.", null);
 			}
 			
 	});
@@ -81,7 +81,7 @@ var listCharts = function(cb) {
 	request(baseUrl, function(error, response, html) {
 		var charts = [];
 		if (error) {
-			cb(charts, error)
+			cb(error, null)
 			return;
 		}
 		var $ = cheerio.load(html);
@@ -94,7 +94,7 @@ var listCharts = function(cb) {
 		});
 
 		if (typeof cb === 'function') {
-			cb(charts);
+			cb(null, charts);
 		}
 	});
 }

@@ -30,7 +30,12 @@ var getChart = function(chart, date, cb){
 
 			var $ = cheerio.load(html);
 
-			covers.push(undefined); // top song has no cover image
+			//add first song in its own format
+			covers.push($('.chart-number-one__image').attr('src')); //unfortunately, still no real image for #1. Pushing the placeholder billboard uses
+			artists.push($('.chart-number-one__artist a').text());
+			titles.push($('.chart-number-one__title').text());
+			ranks.push(1);
+
 			$('.chart-list-item__image-wrapper').each(function(index, item){
 				var imageSrcAttrib = $(this).children()[1].attribs['data-srcset'];
 				if (imageSrcAttrib == undefined) {
@@ -70,7 +75,7 @@ var getChart = function(chart, date, cb){
 			else {
 				cb ("No chart found.", null);
 			}
-			
+
 	});
 
 }

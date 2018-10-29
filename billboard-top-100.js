@@ -43,7 +43,7 @@ var getChart = function(chart, date, cb){
 			$('#main > div.chart-detail-header > div.container.container--no-background.chart-number-one > div.chart-video__wrapper').each(function(index, item){
 				var item = $(this)[0].attribs;
 				var full_title = item['data-title'];
-				var [song_titles, artists_name] = full_title.split(/[_ 
+				var [song_titles, artists_name] = full_title.split(/[_\-]/);
 				titles.push(song_titles);
 				artists.push(artists_name);
 				ranks.push(item['data-rank']);

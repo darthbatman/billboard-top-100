@@ -30,12 +30,7 @@ var getChart = function(chart, date, cb){
 
 			var $ = cheerio.load(html);
 
-			//add first song in its own format
-			covers.push($('.chart-number-one__image').attr('src')); //unfortunately, still no real image for #1. Pushing the placeholder billboard uses
-			artists.push($('.chart-number-one__artist a').text());
-			titles.push($('.chart-number-one__title').text());
-			ranks.push(1);
-
+			covers.push(undefined); // top song has no cover image
 			$('.chart-list-item__image-wrapper').each(function(index, item){
 				var imageSrcAttrib = $(this).children()[1].attribs['data-srcset'];
 				if (imageSrcAttrib == undefined) {
@@ -44,6 +39,15 @@ var getChart = function(chart, date, cb){
 				var songCover = imageSrcAttrib.split(', ').slice(-1)[0].split(' ')[0];
 				covers.push(songCover);
 			});
+			
+			$('#main > div.chart-detail-header > div.container.container--no-background.chart-number-one > div.chart-video__wrapper').each(function(index, item){
+				var item = $(this)[0].attribs;
+				var full_title = item['data-title'];
+				var [song_titles, artists_name] = full_title.split(/[_\-]/);
+				titles.push(song_titles);
+				artists.push(artists_name);
+				ranks.push(item['data-rank']);
+			});
 
 			$('.chart-list-item__title').each(function(index, item){
 				var item = $(this).parent().parent().parent().parent()[0].attribs;
@@ -51,6 +55,8 @@ var getChart = function(chart, date, cb){
 				artists.push(item['data-artist']);
 				ranks.push(item['data-rank']);
 			});
+			
+			
 
 			if (titles.length > 1){
 				for (var i = 0; i < titles.length; i++){
@@ -75,7 +81,7 @@ var getChart = function(chart, date, cb){
 			else {
 				cb ("No chart found.", null);
 			}
-
+			
 	});
 
 }

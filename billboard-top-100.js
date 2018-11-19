@@ -56,7 +56,12 @@ var getChart = function(chart, date, cb){
 				ranks.push(item['data-rank']);
 			});
 			
-			
+			songs.push({
+				"rank": 1,
+				"title": $('.chart-number-one__details').children('.chart-number-one__title').text().trim(),
+				"artist": $('.chart-number-one__details').children('.chart-number-one__artist').text().trim(),
+				"cover": ""
+			});
 
 			if (titles.length > 1){
 				for (var i = 0; i < titles.length; i++){

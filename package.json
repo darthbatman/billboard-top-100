@@ -1,6 +1,6 @@
 {
   "name": "billboard-top-100",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "description": "Gets the top songs, albums, and artists from Billboard's charts",
   "main": "billboard-top-100.js",
   "dependencies": {

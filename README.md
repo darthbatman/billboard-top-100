@@ -83,7 +83,7 @@ Type: `function`
 
 ```callback``` function
 
-Returns array of songs/albums/artists in chart.
+Returns array of songs/albums/artists (as specified by chart) in chart.
 
 ### chartObject.name
 

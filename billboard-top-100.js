@@ -1,142 +1,293 @@
-var request = require("request");
-var cheerio = require("cheerio");
+// REQUIRES
 
-const baseUrl = "http://www.billboard.com/charts/";
+var request = require('request');
+var cheerio = require('cheerio');
 
+// CONSTANTS
+
+var CHARTS_BASE_URL = 'http://www.billboard.com/charts/';
+
+// IMPLEMENTATION FUNCTIONS
+
+/**
+ * Creates a new title-cased string from the given string
+ * From: https://stackoverflow.com/questions/196972/convert-string-to-title-case-with-javascript
+ *
+ * @param {string} str - The string to be title-cased
+ * @return {string} The title-cased string
+ *
+ * @example
+ * 
+ *     toTitleCase("hello woRld") // "Hello World"
+ */
 function toTitleCase(str) {
-    return str.replace(/\w\S*/g, function(txt){
+    return str.replace(/\w\S*/g, function strToReplaceWith(txt){
         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
 }
 
-// list all data from requested chart
+/**
+ * Gets the title from the specified chart item
+ *
+ * @param {HTMLElement} chartItem - The chart item
+ * @return {string} The title
+ *
+ * @example
+ * 
+ *     getTitleFromChartItem(<div class="chart-list-item">...</div>) // 'The Real Slim Shady'
+ */
+function getTitleFromChartItem(chartItem) {
+	var title;
+	try {
+		title = chartItem.children[1].children[5].children[1].children[1].children[1].children[0].data.replace(/\n/g, '');
+	} catch (e) {
+		title = '';
+	}
+	return title;
+} 
 
-var getChart = function(chart, date, cb){
-	var result;
+/**
+ * Gets the artist from the specified chart item
+ *
+ * @param {HTMLElement} chartItem - The chart item
+ * @return {string} The artist
+ *
+ * @example
+ * 
+ *     getArtistFromChartItem(<div class="chart-list-item">...</div>) // 'Eminem'
+ */
+function getArtistFromChartItem(chartItem) {
+	var artist;
+	try {
+		artist = chartItem.children[1].children[5].children[1].children[3].children[0].data.replace(/\n/g, '');
+	} catch (e) {
+		artist = '';
+	}
+	if (artist.trim().length < 1) {
+		try {
+			artist = chartItem.children[1].children[5].children[1].children[3].children[1].children[0].data.replace(/\n/g, '');
+		} catch (e) {
+			artist = '';
+		}
+	}
+	return artist;
+} 
+
+/**
+ * Gets the cover from the specified chart item
+ *
+ * @param {HTMLElement} chartItem - The chart item
+ * @param {number} rank - The rank of the chart item
+ * @return {string} The cover url string
+ *
+ * @example
+ * 
+ *     getCoverFromChartItem(<div class="chart-list-item">...</div>) // 'https://charts-static.billboard.com/img/2016/12/locash-53x53.jpg'
+ */
+function getCoverFromChartItem(chartItem, rank) {
+	var cover;
+	try {
+		if (rank == 1) {
+			cover = chartItem[0].children[1].attribs.src;
+		} else {
+			cover = chartItem.children[1].children[3].children[3].attribs['data-src'];
+		}
+	} catch (e) {
+		cover = '';
+	}
+	return cover;
+} 
+
+/**
+ * Gets the position last week from the specified chart item
+ *
+ * @param {HTMLElement} chartItem - The chart item
+ * @return {number} The position last week
+ *
+ * @example
+ * 
+ *     getPositionLastWeekFromChartItem(<div class="chart-list-item">...</div>) // 4
+ */
+function getPositionLastWeekFromChartItem(chartItem) {
+	var positionLastWeek;
+	try {
+		positionLastWeek = chartItem.children[3].children[3].children[1].children[3].children[0].data;
+	} catch (e) {
+		positionLastWeek = '';
+	}
+	return parseInt(positionLastWeek);
+} 
+
+/**
+ * Gets the peak position from the specified chart item
+ *
+ * @param {HTMLElement} chartItem - The chart item
+ * @return {number} The peak position
+ *
+ * @example
+ * 
+ *     getPeakPositionFromChartItem(<div class="chart-list-item">...</div>) // 4
+ */
+function getPeakPositionFromChartItem(chartItem) {
+	var peakPosition;
+	try {
+		peakPosition = chartItem.children[3].children[3].children[3].children[3].children[0].data;
+	} catch (e) {
+		peakPosition = '';
+	}
+	return parseInt(peakPosition);
+} 
+
+/**
+ * Gets the weeks on chart last week from the specified chart item
+ *
+ * @param {HTMLElement} chartItem - The chart item
+ * @return {number} The weeks on chart
+ *
+ * @example
+ * 
+ *     getWeeksOnChartFromChartItem(<div class="chart-list-item">...</div>) // 4
+ */
+function getWeeksOnChartFromChartItem(chartItem) {
+	var weeksOnChart;
+	try {
+		weeksOnChart = chartItem.children[3].children[3].children[5].children[3].children[0].data;
+	} catch (e) {
+		weeksOnChart = '';
+	}
+	return parseInt(weeksOnChart);
+} 
+
+/**
+ * Gets information for specified chart and date
+ *
+ * @param {string} chart - The specified chart
+ * @param {string} date - Date represented as string in format 'YYYY-MM-DD'
+ * @param {function} cb - The specified callback method
+ *
+ * @example
+ * 
+ *     getChart('hot-100', '2016-08-27', function(err, songs) {...})
+ */
+function getChart(chart, date, cb) {
+	// check if date was specified
 	if (typeof date === 'function'){
+		// if date not specified, default to current chart for current week, 
+		// and set callback method accordingly
 		cb = date;
 		date = '';
 	}
+	/**
+	 * A song
+	 * @typedef {Object} Song
+	 * @property {string} title - The title of the song
+	 * @property {string} artist - The song's artist
+	 */
 
+	/**
+	 * Array of songs
+	 */
 	var songs = [];
-
-	var titles = [];
-	var artists = [];
-	var covers = [];
-	var ranks = [];
-	var positions = [];
-
-	request(baseUrl + chart + "/" + date, function(error, response, html){
-
-			var $ = cheerio.load(html);
-
-  // Cover
-			covers.push(undefined); // top song has no cover image
-			$('.chart-list-item__image-wrapper').each(function(index, item){
-				var imageSrcAttrib = $(this).children()[1].attribs['data-srcset'];
-				if (imageSrcAttrib == undefined) {
-					imageSrcAttrib = $(this).children()[2].attribs['data-srcset'];
-				}
-				var songCover = imageSrcAttrib.split(', ').slice(-1)[0].split(' ')[0];
-				covers.push(songCover);
-			});
-
-// A and B are the same thing
-      //A
-			$('#main > div.chart-detail-header > div.container.container--no-background.chart-number-one > div.chart-video__wrapper').each(function(index, item){
-				var item = $(this)[0].attribs;
-				var full_title = item['data-title'];
-				var [song_titles, artists_name] = full_title.split(/[_\-]/);
-				titles.push(song_titles);
-				artists.push(artists_name);
-				ranks.push(item['data-rank']);
-			});
-      //B
-			$('.chart-list-item__title').each(function(index, item){
-				var item = $(this).parent().parent().parent().parent()[0].attribs;
-				titles.push(item['data-title']);
-				artists.push(item['data-artist']);
-				ranks.push(item['data-rank']);
-			});
-
-  // position of song
-      $('.chart-list-item__stats').each(function(index,item){
-        var lastWeek = $(this).children('.chart-list-item__stats-cell').children('.chart-list-item__last-week').text();
-        var peak = $(this).children('.chart-list-item__stats-cell').children('.chart-list-item__weeks-at-one').text();
-        var wksOnChart = $(this).children('.chart-list-item__stats-cell').children('.chart-list-item__weeks-on-chart').text();
-        positions.push({
-          "PositionLastWeek": lastWeek,
-          "PeakPosition": peak,
-          "WksOnChart": wksOnChart
-        });
-      })
-
-  // information for #1 ranked song
+	// build request URL string for specified chart and date
+	var requestURL = CHARTS_BASE_URL + chart + "/" + date;
+	request(requestURL, function completedRequest(error, response, html) {
+		if (error) {
+			cb(error, null);
+			return;
+		}
+		var $ = cheerio.load(html);
+		// push #1 ranked song into songs array (formatted differently from following songs)
+		songs.push({
+			"rank": 1,
+			"title": $('.chart-number-one__details').children('.chart-number-one__title').text().trim(),
+			"artist": $('.chart-number-one__details').children('.chart-number-one__artist').text().trim(),
+			"cover": getCoverFromChartItem($('.chart-number-one__image-wrapper'), 1),
+	        "position" : {
+	          "positionLastWeek": parseInt($('.chart-number-one__stats-cell--bordered').children('.chart-number-one__last-week').text().trim()),
+	          "peakPosition": 1,
+	          "weeksOnChart": parseInt($('.chart-number-one__stats-cell--bordered').children('.chart-number-one__weeks-on-chart').text().trim())
+	        }
+		});
+		// push remaining ranked songs into songs array
+		$('.chart-list-item').each(function(index, item) {
+			var rank = index + 2;
 			songs.push({
-				"rank": 1,
-				"title": $('.chart-number-one__details').children('.chart-number-one__title').text().trim(),
-				"artist": $('.chart-number-one__details').children('.chart-number-one__artist').text().trim(),
-				"cover": "",
-        "position" : {
-          "PositionLastWeek": $('.chart-number-one__stats-cell--bordered').children('.chart-number-one__last-week').text().trim(),
-          "PeakPosition": "1",
-          "WksOnChart":$('.chart-number-one__stats-cell--bordered').children('.chart-number-one__weeks-on-chart').text().trim()
-        }
-			});
-
-			if (titles.length > 1){
-				for (var i = 0; i < titles.length; i++){
-					var song = {
-						"rank": ranks[i],
-						"title": titles[i],
-						"artist": artists[i],
-						"cover": covers[i],
-					};
-					var positionInfo = positions[i];
-					if (positionInfo) {
-						song['position'] = positionInfo;
-					}
-					songs.push(song);
-
-					if (i == titles.length - 1){
-						cb (null, songs);
-					}
-
+				"rank": rank,
+				"title": getTitleFromChartItem(item),
+				"artist": getArtistFromChartItem(item),
+				"cover": getCoverFromChartItem(item, rank),
+				"position" : {
+					"positionLastWeek": getPositionLastWeekFromChartItem(item),
+					"peakPosition": getPeakPositionFromChartItem(item),
+					"weeksOnChart": getWeeksOnChartFromChartItem(item)
 				}
-			}
-			else {
-				cb ("No chart found.", null);
-			}
-
+			});
+		});
+		// callback with songs if songs array was populated
+		if (songs.length > 1){
+			cb(null, songs);
+			return;
+		} else {
+			cb("Songs not found.", null);
+			return;
+		}
 	});
 
 }
 
-  // list the available charts
+/**
+ * Gets all charts available via Billboard
+ *
+ * @param {string} chart - The specified chart
+ * @param {string} date - Date represented as string in format 'YYYY-MM-DD'
+ * @param {function} cb - The specified callback method
+ *
+ * @example
+ * 
+ *     listCharts(function(err, charts) {...})
+ */
+function listCharts(cb) {
+	if (typeof cb !== 'function') {
+		cb('Specified callback is not a function.', null);
+		return;
+	}
+	request(CHARTS_BASE_URL, function completedRequest(error, response, html) {
+		if (error) {
+			cb(error, null);
+			return;
+		}
+		var $ = cheerio.load(html);
+		/**
+		 * A chart
+		 * @typedef {Object} Chart
+		 * @property {string} name - The name of the chart
+		 * @property {string} url - The url of the chat
+		 */
 
-  var listCharts = function(cb) {
-  	request(baseUrl, function(error, response, html) {
-  		var charts = [];
-  		if (error) {
-  			cb(error, null)
-  			return;
-  		}
-  		var $ = cheerio.load(html);
+		/**
+		 * Array of charts
+		 */
+		var charts = [];
+		// push charts into charts array
+		$('.chart-panel__link').each(function(index, item) {
+			var chart = {};
+			chart.name = toTitleCase($(this)[0].attribs.href.replace('/charts/', '').replace(/-/g, ' '));
+			chart.url = "https://www.billboard.com/charts" + $(this)[0].attribs.href;
+			charts.push(chart);
+		});
+		// callback with charts if charts array was populated
+		if (charts.length > 0){
+			cb(null, charts);
+			return;
+		} else {
+			cb("No charts found.", null);
+			return;
+		}
+	});
+}
 
-  		$('.chart-panel__link').each(function(index, item) {
-  			var chartObject = {};
-  			chartObject.chart = toTitleCase($(this)[0].attribs.href.replace('/charts/', '').replace(/-/g, ' '));
-  			chartObject.link = $(this)[0].attribs.href;
-  			charts.push(chartObject);
-  		});
-
-  		if (typeof cb === 'function') {
-  			cb(null, charts);
-  		}
-  	});
-  }
-
-  module.exports = {
-  	getChart,
-  	listCharts
-  }
+// export getChart and listCharts functions
+module.exports = {
+	getChart,
+	listCharts
+}

@@ -85,17 +85,17 @@ Type: `function`
 
 Returns array of songs/albums/artists in chart.
 
-### chartObject.chart
+### chartObject.name
 
 Type: `string`
 
 Name of chart.
 
-### chartObject.link
+### chartObject.url
 
 Type: `string`
 
-Location of chart on Billboard website.
+URL of chart.
 
 ### songs
 

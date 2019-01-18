@@ -7,7 +7,7 @@ var cheerio = require('cheerio');
 
 var CHARTS_BASE_URL = 'http://www.billboard.com/charts/';
 
-// IMPLEMENTATION FUNCTIONS
+// HELPER FUNCTIONS
 
 /**
  * Creates a new title-cased string from the given string
@@ -25,6 +25,64 @@ function toTitleCase(str) {
         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
 }
+
+
+/**
+ * Converts Month Day, Year date to YYYY-MM-DD date
+ *
+ * @param {string} monthDayYearDate - The Month Day, Year date
+ * @return {string} The YYYY-MM-DD date
+ *
+ * @example
+ * 
+ *     yyyymmddDateFromMonthDayYearDate("November 19, 2016") // 2016-11-19
+ */
+function yyyymmddDateFromMonthDayYearDate(monthDayYearDate) {
+	var yyyy = monthDayYearDate.split(',')[1].trim();
+	var dd = monthDayYearDate.split(' ')[1].split(',')[0];
+	var mm = '';
+	switch (monthDayYearDate.split(' ')[0]) {
+		case 'January': 
+			mm = '01';
+			break;
+		case 'February':
+			mm = '02';
+			break;
+		case 'March':
+			mm = '03';
+			break;
+		case 'April':
+			mm = '04';
+			break;
+		case 'May':
+			mm = '05';
+			break;
+		case 'June':
+			mm = '06';
+			break;
+		case 'July':
+			mm = '07';
+			break;
+		case 'August':
+			mm = '08';
+			break;
+		case 'September':
+			mm = '09';
+			break;
+		case 'October':
+			mm = '10';
+			break;
+		case 'November':
+			mm = '11';
+			break;
+		case 'December':
+			mm = '12';
+			break;
+	}
+	return yyyy + '-' + mm + '-' + dd;
+}
+
+// IMPLEMENTATION FUNCTIONS
 
 /**
  * Gets the title from the specified chart item
@@ -90,7 +148,12 @@ function getCoverFromChartItem(chartItem, rank) {
 		if (rank == 1) {
 			cover = chartItem[0].children[1].attribs.src;
 		} else {
-			cover = chartItem.children[1].children[3].children[3].attribs['data-src'];
+			for (var i = 0; i < chartItem.children[1].children[3].children.length; i++) {
+				if (chartItem.children[1].children[3].children[i].name === 'img') {
+					cover = chartItem.children[1].children[3].children[i].attribs['data-src'];
+					break;
+				}
+			}
 		}
 	} catch (e) {
 		cover = '';
@@ -161,22 +224,31 @@ function getWeeksOnChartFromChartItem(chartItem) {
 /**
  * Gets information for specified chart and date
  *
- * @param {string} chart - The specified chart
+ * @param {string} chartName - The specified chart
  * @param {string} date - Date represented as string in format 'YYYY-MM-DD'
  * @param {function} cb - The specified callback method
  *
  * @example
  * 
- *     getChart('hot-100', '2016-08-27', function(err, songs) {...})
+ *     getChart('hot-100', '2016-08-27', function(err, chart) {...})
  */
-function getChart(chart, date, cb) {
+function getChart(chartName, date, cb) {
+	// check if chart was specified
+	if (typeof chartName === 'function') {
+		// if chartName not specified, default to hot-100 chart for current week, 
+		// and set callback method accordingly
+		cb = chartName;
+		chartName = 'hot-100';
+		date = '';
+	}
 	// check if date was specified
-	if (typeof date === 'function'){
-		// if date not specified, default to current chart for current week, 
+	if (typeof date === 'function') {
+		// if date not specified, default to specified chart for current week, 
 		// and set callback method accordingly
 		cb = date;
 		date = '';
 	}
+	var chart = {};
 	/**
 	 * A song
 	 * @typedef {Object} Song
@@ -187,17 +259,19 @@ function getChart(chart, date, cb) {
 	/**
 	 * Array of songs
 	 */
-	var songs = [];
+	chart.songs = [];
 	// build request URL string for specified chart and date
-	var requestURL = CHARTS_BASE_URL + chart + "/" + date;
+	var requestURL = CHARTS_BASE_URL + chartName + "/" + date;
 	request(requestURL, function completedRequest(error, response, html) {
 		if (error) {
 			cb(error, null);
 			return;
 		}
 		var $ = cheerio.load(html);
-		// push #1 ranked song into songs array (formatted differently from following songs)
-		songs.push({
+		// get chart week
+		chart.week = yyyymmddDateFromMonthDayYearDate($(".chart-detail-header__date-selector-button")[0].children[0].data.replace(/\n/g, ''));
+		// push #1 ranked song into chart.songs array (formatted differently from succeeding songs)
+		chart.songs.push({
 			"rank": 1,
 			"title": $('.chart-number-one__details').children('.chart-number-one__title').text().trim(),
 			"artist": $('.chart-number-one__details').children('.chart-number-one__artist').text().trim(),
@@ -208,10 +282,10 @@ function getChart(chart, date, cb) {
 	          "weeksOnChart": parseInt($('.chart-number-one__stats-cell--bordered').children('.chart-number-one__weeks-on-chart').text().trim())
 	        }
 		});
-		// push remaining ranked songs into songs array
+		// push remaining ranked songs into chart.songs array
 		$('.chart-list-item').each(function(index, item) {
 			var rank = index + 2;
-			songs.push({
+			chart.songs.push({
 				"rank": rank,
 				"title": getTitleFromChartItem(item),
 				"artist": getArtistFromChartItem(item),
@@ -223,9 +297,9 @@ function getChart(chart, date, cb) {
 				}
 			});
 		});
-		// callback with songs if songs array was populated
-		if (songs.length > 1){
-			cb(null, songs);
+		// callback with chart if chart.songs array was populated
+		if (chart.songs.length > 1){
+			cb(null, chart);
 			return;
 		} else {
 			cb("Songs not found.", null);

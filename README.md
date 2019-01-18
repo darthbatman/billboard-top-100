@@ -16,42 +16,58 @@ npm install billboard-top-100
 # example
 
 ```js
-var billboard = require("billboard-top-100").getChart;
+var getChart = require("billboard-top-100").getChart;
+
+// chartName defaults to hot-100
+// date defaults to saturday of this week
+
+getChart(function(err, chart) {
+	if (err) console.log(err);
+	console.log(chart.week) // prints the week of the chart in the date format YYYY-MM-DD
+	console.log(chart.songs); // prints array of top 100 songs
+	console.log(chart.songs[3]); // prints song with rank: 4
+	console.log(chart.songs[0].title); // prints title of top song
+	console.log(chart.songs[0].artist); // prints artist of top songs
+	console.log(chart.songs[0].rank) // prints rank of top song (1)
+	console.log(chart.songs[0].cover) // prints URL for Billboard cover image of top song
+});
 
 // date defaults to saturday of this week
 
-billboard('hot-100', function(err, songs) {
+getChart('hot-100', function(err, chart) {
 	if (err) console.log(err);
-	console.log(songs); //prints array of top 100 songs
-	console.log(songs[3]); //prints song with rank: 4
-	console.log(songs[0].title); //prints title of top song
-	console.log(songs[0].artist); //prints artist of top songs
-	console.log(songs[0].rank) //prints rank of top song (1)
-	console.log(songs[0].cover) //prints URL for Billboard cover image of top song
+	console.log(chart.week) // prints the week of the chart in the date format YYYY-MM-DD
+	console.log(chart.songs); // prints array of top 100 songs
+	console.log(chart.songs[3]); // prints song with rank: 4
+	console.log(chart.songs[0].title); // prints title of top song
+	console.log(chart.songs[0].artist); // prints artist of top songs
+	console.log(chart.songs[0].rank) // prints rank of top song (1)
+	console.log(chart.songs[0].cover) // prints URL for Billboard cover image of top song
 });
 
 // date format YYYY-MM-DD
 
-billboard('hot-100', '2016-08-27', function(err, songs) {
+getChart('hot-100', '2016-08-27', function(err, chart) {
 	if (err) console.log(err);
-	console.log(songs); //prints array of top 100 songs for week of August 27, 2016
-	console.log(songs[3]); //prints song with rank: 4 for week of August 27, 2016
-	console.log(songs[0].title); //prints title of top song for week of August 27, 2016
-	console.log(songs[0].artist); //prints artist of top songs for week of August 27, 2016
-	console.log(songs[0].rank) //prints rank of top song (1) for week of August 27, 2016
-	console.log(songs[0].cover) //prints URL for Billboard cover image of top song for week of August 27, 2016
+	console.log(chart.week) // prints the week of the chart in the date format YYYY-MM-DD
+	console.log(chart.songs); //prints array of top 100 songs for week of August 27, 2016
+	console.log(chart.songs[3]); //prints song with rank: 4 for week of August 27, 2016
+	console.log(chart.songs[0].title); //prints title of top song for week of August 27, 2016
+	console.log(chart.songs[0].artist); //prints artist of top songs for week of August 27, 2016
+	console.log(chart.songs[0].rank) //prints rank of top song (1) for week of August 27, 2016
+	console.log(chart.songs[0].cover) //prints URL for Billboard cover image of top song for week of August 27, 2016
 });
 
-// 'all time' chart
+// 'All Time' chart
 
-billboard('greatest-billboard-200-albums', function(err, songs) {
+getChart('greatest-billboard-200-albums', function(err, chart) {
 	if (err) console.log(err);
-	console.log(songs); //prints array of top 200 albums
-	console.log(songs[3]); //prints album with rank: 4
-	console.log(songs[0].title); //prints title of top album
-	console.log(songs[0].artist); //prints artist of top songs
-	console.log(songs[0].rank) //prints rank of top album (1)
-	console.log(songs[0].cover) //prints URL for Billboard cover image of top album
+	console.log(chart.songs); //prints array of top 200 albums
+	console.log(chart.songs[3]); //prints album with rank: 4
+	console.log(chart.songs[0].title); //prints title of top album
+	console.log(chart.songs[0].artist); //prints artist of top songs
+	console.log(chart.songs[0].rank) //prints rank of top album (1)
+	console.log(chart.songs[0].cover) //prints URL for Billboard cover image of top album
 });
 
 // list all available charts
@@ -73,11 +89,11 @@ Type: `function`
 
 Returns array of chartObjects separated by category
 
-### getChart(chart[, date], callback)
+### getChart([chart][, date], callback)
 
 Type: `function`
 
-```chart``` string
+```chartName``` string
 
 ```date``` string ('all time' charts will not accept a date)
 
@@ -97,7 +113,19 @@ Type: `string`
 
 URL of chart.
 
-### songs
+### chart.songs
+
+Type: `object`
+
+Chart containing songs and week.
+
+### chart.week
+
+Type: `string`
+
+Chart week in date format YYYY-MM-DD
+
+### chart.songs
 
 Type: `array`
 

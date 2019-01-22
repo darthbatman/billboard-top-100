@@ -5,7 +5,8 @@ var cheerio = require('cheerio');
 
 // CONSTANTS
 
-var CHARTS_BASE_URL = 'http://www.billboard.com/charts/';
+var BILLBOARD_BASE_URL = 'http://www.billboard.com';
+var BILLBOARD_CHARTS_URL = BILLBOARD_BASE_URL + '/charts/';
 
 // HELPER FUNCTIONS
 
@@ -261,7 +262,7 @@ function getChart(chartName, date, cb) {
 	 */
 	chart.songs = [];
 	// build request URL string for specified chart and date
-	var requestURL = CHARTS_BASE_URL + chartName + "/" + date;
+	var requestURL = BILLBOARD_CHARTS_URL + chartName + '/' + date;
 	request(requestURL, function completedRequest(error, response, html) {
 		if (error) {
 			cb(error, null);
@@ -269,7 +270,16 @@ function getChart(chartName, date, cb) {
 		}
 		var $ = cheerio.load(html);
 		// get chart week
-		chart.week = yyyymmddDateFromMonthDayYearDate($(".chart-detail-header__date-selector-button")[0].children[0].data.replace(/\n/g, ''));
+		chart.week = yyyymmddDateFromMonthDayYearDate($('.chart-detail-header__date-selector-button')[0].children[0].data.replace(/\n/g, ''));
+		// get previous and next charts
+		chart.previousWeek = {
+			url: BILLBOARD_BASE_URL + $('.dropdown__date-selector-option ')[0].children[1].attribs.href,
+			date: $('.dropdown__date-selector-option ')[0].children[1].attribs.href.split('/')[3]
+		};
+		chart.nextWeek = {
+			url: BILLBOARD_BASE_URL + $('.dropdown__date-selector-option ')[1].children[1].attribs.href,
+			date: $('.dropdown__date-selector-option ')[1].children[1].attribs.href.split('/')[3]
+		};
 		// push #1 ranked song into chart.songs array (formatted differently from succeeding songs)
 		chart.songs.push({
 			"rank": 1,
@@ -325,7 +335,7 @@ function listCharts(cb) {
 		cb('Specified callback is not a function.', null);
 		return;
 	}
-	request(CHARTS_BASE_URL, function completedRequest(error, response, html) {
+	request(BILLBOARD_CHARTS_URL, function completedRequest(error, response, html) {
 		if (error) {
 			cb(error, null);
 			return;

@@ -8,6 +8,18 @@ var cheerio = require('cheerio');
 var BILLBOARD_BASE_URL = 'http://www.billboard.com';
 var BILLBOARD_CHARTS_URL = BILLBOARD_BASE_URL + '/charts/';
 
+// GLOBALS
+
+/**
+ * Enum for types of neighboring week.
+ * @readonly
+ * @enum {number}
+ */
+var NeighboringWeek = Object.freeze({ 
+    "Previous": 1, 
+    "Next": 2
+});
+
 // HELPER FUNCTIONS
 
 /**
@@ -223,6 +235,39 @@ function getWeeksOnChartFromChartItem(chartItem) {
 } 
 
 /**
+ * Gets the neighboring chart for a given chart item and neighboring week type.
+ *
+ * @param {HTMLElement} chartItem - The chart item
+ * @param {enum} neighboringWeek - The type of neighboring week
+ * @return {object} The neighboring chart with url and week
+ *
+ * @example
+ * 
+ *     getNeighboringChart(<div class="dropdown__date-selector-option">...</div>) // { url: 'http://www.billboard.com/charts/hot-100/2016-11-12', date: '2016-11-12' }
+ */
+function getNeighboringChart(chartItem, neighboringWeek) {
+	if (neighboringWeek == NeighboringWeek.Previous) {
+		if (chartItem[0].attribs.class.indexOf('dropdown__date-selector-option--disabled') == -1) {
+			return {
+				url: BILLBOARD_BASE_URL + chartItem[0].children[1].attribs.href,
+				date: chartItem[0].children[1].attribs.href.split('/')[3]
+			};
+		}
+	} else {
+		if (chartItem[1].attribs.class.indexOf('dropdown__date-selector-option--disabled') == -1) {
+			return {
+				url: BILLBOARD_BASE_URL + chartItem[1].children[1].attribs.href,
+				date: chartItem[1].children[1].attribs.href.split('/')[3]
+			};
+		}
+	}
+	return {
+		url: '',
+		date: ''
+	}
+} 
+
+/**
  * Gets information for specified chart and date
  *
  * @param {string} chartName - The specified chart
@@ -272,14 +317,8 @@ function getChart(chartName, date, cb) {
 		// get chart week
 		chart.week = yyyymmddDateFromMonthDayYearDate($('.chart-detail-header__date-selector-button')[0].children[0].data.replace(/\n/g, ''));
 		// get previous and next charts
-		chart.previousWeek = {
-			url: BILLBOARD_BASE_URL + $('.dropdown__date-selector-option ')[0].children[1].attribs.href,
-			date: $('.dropdown__date-selector-option ')[0].children[1].attribs.href.split('/')[3]
-		};
-		chart.nextWeek = {
-			url: BILLBOARD_BASE_URL + $('.dropdown__date-selector-option ')[1].children[1].attribs.href,
-			date: $('.dropdown__date-selector-option ')[1].children[1].attribs.href.split('/')[3]
-		};
+		chart.previousWeek = getNeighboringChart($('.dropdown__date-selector-option '), NeighboringWeek.Previous);
+		chart.nextWeek = getNeighboringChart($('.dropdown__date-selector-option '), NeighboringWeek.Next);
 		// push #1 ranked song into chart.songs array (formatted differently from succeeding songs)
 		chart.songs.push({
 			"rank": 1,

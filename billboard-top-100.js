@@ -395,7 +395,7 @@ function listCharts(cb) {
 		$('.chart-panel__link').each(function(index, item) {
 			var chart = {};
 			chart.name = toTitleCase($(this)[0].attribs.href.replace('/charts/', '').replace(/-/g, ' '));
-			chart.url = "https://www.billboard.com/charts" + $(this)[0].attribs.href;
+			chart.url = "https://www.billboard.com" + $(this)[0].attribs.href;
 			charts.push(chart);
 		});
 		// callback with charts if charts array was populated

@@ -81,7 +81,7 @@ Type: `function`
 
 Returns array of chartObjects separated by category
 
-### getChart([chart][, date], callback)
+### getChart([chartName], [date], callback)
 
 Type: `function`
 

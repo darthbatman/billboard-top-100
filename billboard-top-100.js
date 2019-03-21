@@ -319,21 +319,9 @@ function getChart(chartName, date, cb) {
 		// get previous and next charts
 		chart.previousWeek = getNeighboringChart($('.dropdown__date-selector-option '), NeighboringWeek.Previous);
 		chart.nextWeek = getNeighboringChart($('.dropdown__date-selector-option '), NeighboringWeek.Next);
-		// push #1 ranked song into chart.songs array (formatted differently from succeeding songs)
-		chart.songs.push({
-			"rank": 1,
-			"title": $('.chart-number-one__details').children('.chart-number-one__title').text().trim(),
-			"artist": $('.chart-number-one__details').children('.chart-number-one__artist').text().trim(),
-			"cover": getCoverFromChartItem($('.chart-number-one__image-wrapper'), 1),
-	        "position" : {
-	          "positionLastWeek": parseInt($('.chart-number-one__stats-cell--bordered').children('.chart-number-one__last-week').text().trim()),
-	          "peakPosition": 1,
-	          "weeksOnChart": parseInt($('.chart-number-one__stats-cell--bordered').children('.chart-number-one__weeks-on-chart').text().trim())
-	        }
-		});
 		// push remaining ranked songs into chart.songs array
 		$('.chart-list-item').each(function(index, item) {
-			var rank = index + 2;
+			var rank = index + 1;
 			chart.songs.push({
 				"rank": rank,
 				"title": getTitleFromChartItem(item),

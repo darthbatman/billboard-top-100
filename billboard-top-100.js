@@ -159,7 +159,7 @@ function getCoverFromChartItem(chartItem, rank) {
 	var cover;
 	try {
 		if (rank == 1) {
-			cover = chartItem[0].children[1].attribs.src;
+			cover = chartItem.children[1].children[3].children[5].attribs["data-src"];
 		} else {
 			for (var i = 0; i < chartItem.children[1].children[3].children.length; i++) {
 				if (chartItem.children[1].children[3].children[i].name === 'img') {

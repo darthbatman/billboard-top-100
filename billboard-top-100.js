@@ -159,11 +159,25 @@ function getCoverFromChartItem(chartItem, rank) {
 	var cover;
 	try {
 		if (rank == 1) {
-			cover = chartItem.children[1].children[3].children[5].attribs["data-src"];
+			if (typeof chartItem.children[1].children[3].children[5].attribs['data-srcset'] === "undefined"){
+				cover = chartItem.children[1].children[3].children[5].attribs.src;
+			} else if(chartItem.children[1].children[3].children[5].attribs['data-srcset'].split(' ').length === 8){
+				cover = chartItem.children[1].children[3].children[5].attribs['data-srcset'].split(' ')[6];
+			} else if(chartItem.children[1].children[3].children[5].attribs['data-srcset'].split(' ').length === 6){
+				cover = chartItem.children[1].children[3].children[5].attribs['data-srcset'].split(' ')[4];
+			}
 		} else {
 			for (var i = 0; i < chartItem.children[1].children[3].children.length; i++) {
 				if (chartItem.children[1].children[3].children[i].name === 'img') {
-					cover = chartItem.children[1].children[3].children[i].attribs['data-src'];
+					if (typeof chartItem.children[1].children[3].children[i].attribs['data-srcset'] === "undefined"){
+						cover = chartItem.children[1].children[3].children[i].attribs.src;
+					} else if(chartItem.children[1].children[3].children[i].attribs['data-srcset'].split(' ').length === 8){
+						cover = chartItem.children[1].children[3].children[i].attribs['data-srcset'].split(' ')[6];
+					} else if(chartItem.children[1].children[3].children[i].attribs['data-srcset'].split(' ').length === 6){
+						cover = chartItem.children[1].children[3].children[i].attribs['data-srcset'].split(' ')[4];
+					} else if (chartItem.children[1].children[3].children[i].attribs['data-srcset'].split(' ').length === 4) {
+						cover = chartItem.children[1].children[3].children[i].attribs['data-srcset'].split(' ')[2];
+					}
 					break;
 				}
 			}

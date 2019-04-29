@@ -160,7 +160,7 @@ function getCoverFromChartItem(chartItem, rank) {
 	try {
 		if (rank == 1) {
 			if (typeof chartItem.children[1].children[3].children[5].attribs['data-srcset'] === "undefined"){
-				cover = chartItem.children[1].children[3].children[5].attribs.src;
+				cover = chartItem.children[1].children[3].children[5].attribs["data-src"];;
 			} else if(chartItem.children[1].children[3].children[5].attribs['data-srcset'].split(' ').length === 8){
 				cover = chartItem.children[1].children[3].children[5].attribs['data-srcset'].split(' ')[6];
 			} else if(chartItem.children[1].children[3].children[5].attribs['data-srcset'].split(' ').length === 6){

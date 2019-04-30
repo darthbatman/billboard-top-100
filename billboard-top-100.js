@@ -201,7 +201,11 @@ function getCoverFromChartItem(chartItem, rank) {
 function getPositionLastWeekFromChartItem(chartItem) {
 	var positionLastWeek;
 	try {
-		positionLastWeek = chartItem.children[3].children[3].children[1].children[3].children[0].data;
+		if (chartItem.children[3].children.length > 5) {
+			positionLastWeek = chartItem.children[3].children[5].children[3].children[3].children[0].data
+		} else {
+			positionLastWeek = chartItem.children[3].children[3].children[1].children[3].children[0].data;
+		}
 	} catch (e) {
 		positionLastWeek = '';
 	}
@@ -221,9 +225,13 @@ function getPositionLastWeekFromChartItem(chartItem) {
 function getPeakPositionFromChartItem(chartItem) {
 	var peakPosition;
 	try {
-		peakPosition = chartItem.children[3].children[3].children[3].children[3].children[0].data;
+		if (chartItem.children[3].children.length > 5) {
+			peakPosition = chartItem.children[3].children[5].children[5].children[3].children[0].data;
+		} else {
+			peakPosition = chartItem.children[3].children[3].children[3].children[3].children[0].data;
+		}
 	} catch (e) {
-		peakPosition = '';
+		peakPosition = chartItem.attribs['data-rank'];
 	}
 	return parseInt(peakPosition);
 } 
@@ -241,9 +249,13 @@ function getPeakPositionFromChartItem(chartItem) {
 function getWeeksOnChartFromChartItem(chartItem) {
 	var weeksOnChart;
 	try {
-		weeksOnChart = chartItem.children[3].children[3].children[5].children[3].children[0].data;
+		if (chartItem.children[3].children.length > 5) {
+			weeksOnChart = chartItem.children[3].children[5].children[7].children[3].children[0].data;
+		} else {
+			weeksOnChart = chartItem.children[3].children[3].children[5].children[3].children[0].data;
+		}
 	} catch (e) {
-		weeksOnChart = '';
+		weeksOnChart = '1';
 	}
 	return parseInt(weeksOnChart);
 } 

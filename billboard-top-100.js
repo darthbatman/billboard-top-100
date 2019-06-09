@@ -111,6 +111,9 @@ function getTitleFromChartItem(chartItem) {
 	var title;
 	try {
 		title = chartItem.children[1].children[5].children[1].children[1].children[1].children[0].data.replace(/\n/g, '');
+		if (title=='') {
+                    title = chartItem.children[1].children[5].children[1].children[1].children[1].children[0].next.children[0].data.replace(/\n/g, '');
+                }
 	} catch (e) {
 		title = '';
 	}

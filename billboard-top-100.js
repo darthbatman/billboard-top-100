@@ -1,12 +1,12 @@
 // REQUIRES
 
-var request = require('request');
-var cheerio = require('cheerio');
+const request = require('request');
+const cheerio = require('cheerio');
 
 // CONSTANTS
 
-var BILLBOARD_BASE_URL = 'http://www.billboard.com';
-var BILLBOARD_CHARTS_URL = BILLBOARD_BASE_URL + '/charts/';
+const BILLBOARD_BASE_URL = 'http://www.billboard.com';
+const BILLBOARD_CHARTS_URL = `${BILLBOARD_BASE_URL}/charts/`;
 
 // GLOBALS
 
@@ -15,9 +15,9 @@ var BILLBOARD_CHARTS_URL = BILLBOARD_BASE_URL + '/charts/';
  * @readonly
  * @enum {number}
  */
-var NeighboringWeek = Object.freeze({ 
-    "Previous": 1, 
-    "Next": 2
+const NeighboringWeek = Object.freeze({
+  Previous: 1,
+  Next: 2,
 });
 
 // HELPER FUNCTIONS
@@ -30,13 +30,11 @@ var NeighboringWeek = Object.freeze({
  * @return {string} The title-cased string
  *
  * @example
- * 
+ *
  *     toTitleCase("hello woRld") // "Hello World"
  */
 function toTitleCase(str) {
-    return str.replace(/\w\S*/g, function strToReplaceWith(txt){
-        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-    });
+  return str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 }
 
 
@@ -47,52 +45,52 @@ function toTitleCase(str) {
  * @return {string} The YYYY-MM-DD date
  *
  * @example
- * 
+ *
  *     yyyymmddDateFromMonthDayYearDate("November 19, 2016") // 2016-11-19
  */
 function yyyymmddDateFromMonthDayYearDate(monthDayYearDate) {
-	var yyyy = monthDayYearDate.split(',')[1].trim();
-	var dd = monthDayYearDate.split(' ')[1].split(',')[0];
-	var mm = '';
-	switch (monthDayYearDate.split(' ')[0]) {
-		case 'January': 
-			mm = '01';
-			break;
-		case 'February':
-			mm = '02';
-			break;
-		case 'March':
-			mm = '03';
-			break;
-		case 'April':
-			mm = '04';
-			break;
-		case 'May':
-			mm = '05';
-			break;
-		case 'June':
-			mm = '06';
-			break;
-		case 'July':
-			mm = '07';
-			break;
-		case 'August':
-			mm = '08';
-			break;
-		case 'September':
-			mm = '09';
-			break;
-		case 'October':
-			mm = '10';
-			break;
-		case 'November':
-			mm = '11';
-			break;
-		case 'December':
-			mm = '12';
-			break;
-	}
-	return yyyy + '-' + mm + '-' + dd;
+  var yyyy = monthDayYearDate.split(',')[1].trim();
+  var dd = monthDayYearDate.split(' ')[1].split(',')[0];
+  var mm = '';
+  switch (monthDayYearDate.split(' ')[0]) {
+    case 'January': 
+      mm = '01';
+      break;
+    case 'February':
+      mm = '02';
+      break;
+    case 'March':
+      mm = '03';
+      break;
+    case 'April':
+      mm = '04';
+      break;
+    case 'May':
+      mm = '05';
+      break;
+    case 'June':
+      mm = '06';
+      break;
+    case 'July':
+      mm = '07';
+      break;
+    case 'August':
+      mm = '08';
+      break;
+    case 'September':
+      mm = '09';
+      break;
+    case 'October':
+      mm = '10';
+      break;
+    case 'November':
+      mm = '11';
+      break;
+    case 'December':
+      mm = '12';
+      break;
+  }
+  return yyyy + '-' + mm + '-' + dd;
 }
 
 // IMPLEMENTATION FUNCTIONS
@@ -108,16 +106,16 @@ function yyyymmddDateFromMonthDayYearDate(monthDayYearDate) {
  *     getTitleFromChartItem(<div class="chart-list-item">...</div>) // 'The Real Slim Shady'
  */
 function getTitleFromChartItem(chartItem) {
-	var title;
-	try {
-		title = chartItem.children[1].children[5].children[1].children[1].children[1].children[0].data.replace(/\n/g, '');
-		if (title=='') {
+  var title;
+  try {
+    title = chartItem.children[1].children[5].children[1].children[1].children[1].children[0].data.replace(/\n/g, '');
+    if (title=='') {
                     title = chartItem.children[1].children[5].children[1].children[1].children[1].children[0].next.children[0].data.replace(/\n/g, '');
                 }
-	} catch (e) {
-		title = '';
-	}
-	return title;
+  } catch (e) {
+    title = '';
+  }
+  return title;
 } 
 
 /**
@@ -131,20 +129,20 @@ function getTitleFromChartItem(chartItem) {
  *     getArtistFromChartItem(<div class="chart-list-item">...</div>) // 'Eminem'
  */
 function getArtistFromChartItem(chartItem) {
-	var artist;
-	try {
-		artist = chartItem.children[1].children[5].children[1].children[3].children[0].data.replace(/\n/g, '');
-	} catch (e) {
-		artist = '';
-	}
-	if (artist.trim().length < 1) {
-		try {
-			artist = chartItem.children[1].children[5].children[1].children[3].children[1].children[0].data.replace(/\n/g, '');
-		} catch (e) {
-			artist = '';
-		}
-	}
-	return artist;
+  var artist;
+  try {
+    artist = chartItem.children[1].children[5].children[1].children[3].children[0].data.replace(/\n/g, '');
+  } catch (e) {
+    artist = '';
+  }
+  if (artist.trim().length < 1) {
+    try {
+      artist = chartItem.children[1].children[5].children[1].children[3].children[1].children[0].data.replace(/\n/g, '');
+    } catch (e) {
+      artist = '';
+    }
+  }
+  return artist;
 } 
 
 /**
@@ -159,36 +157,36 @@ function getArtistFromChartItem(chartItem) {
  *     getCoverFromChartItem(<div class="chart-list-item">...</div>) // 'https://charts-static.billboard.com/img/2016/12/locash-53x53.jpg'
  */
 function getCoverFromChartItem(chartItem, rank) {
-	var cover;
-	try {
-		if (rank == 1) {
-			if (typeof chartItem.children[1].children[3].children[5].attribs['data-srcset'] === "undefined"){
-				cover = chartItem.children[1].children[3].children[5].attribs["data-src"];;
-			} else if(chartItem.children[1].children[3].children[5].attribs['data-srcset'].split(' ').length === 8){
-				cover = chartItem.children[1].children[3].children[5].attribs['data-srcset'].split(' ')[6];
-			} else if(chartItem.children[1].children[3].children[5].attribs['data-srcset'].split(' ').length === 6){
-				cover = chartItem.children[1].children[3].children[5].attribs['data-srcset'].split(' ')[4];
-			}
-		} else {
-			for (var i = 0; i < chartItem.children[1].children[3].children.length; i++) {
-				if (chartItem.children[1].children[3].children[i].name === 'img') {
-					if (typeof chartItem.children[1].children[3].children[i].attribs['data-srcset'] === "undefined"){
-						cover = chartItem.children[1].children[3].children[i].attribs.src;
-					} else if(chartItem.children[1].children[3].children[i].attribs['data-srcset'].split(' ').length === 8){
-						cover = chartItem.children[1].children[3].children[i].attribs['data-srcset'].split(' ')[6];
-					} else if(chartItem.children[1].children[3].children[i].attribs['data-srcset'].split(' ').length === 6){
-						cover = chartItem.children[1].children[3].children[i].attribs['data-srcset'].split(' ')[4];
-					} else if (chartItem.children[1].children[3].children[i].attribs['data-srcset'].split(' ').length === 4) {
-						cover = chartItem.children[1].children[3].children[i].attribs['data-srcset'].split(' ')[2];
-					}
-					break;
-				}
-			}
-		}
-	} catch (e) {
-		cover = '';
-	}
-	return cover;
+  var cover;
+  try {
+    if (rank == 1) {
+      if (typeof chartItem.children[1].children[3].children[5].attribs['data-srcset'] === "undefined"){
+        cover = chartItem.children[1].children[3].children[5].attribs["data-src"];;
+      } else if(chartItem.children[1].children[3].children[5].attribs['data-srcset'].split(' ').length === 8){
+        cover = chartItem.children[1].children[3].children[5].attribs['data-srcset'].split(' ')[6];
+      } else if(chartItem.children[1].children[3].children[5].attribs['data-srcset'].split(' ').length === 6){
+        cover = chartItem.children[1].children[3].children[5].attribs['data-srcset'].split(' ')[4];
+      }
+    } else {
+      for (var i = 0; i < chartItem.children[1].children[3].children.length; i++) {
+        if (chartItem.children[1].children[3].children[i].name === 'img') {
+          if (typeof chartItem.children[1].children[3].children[i].attribs['data-srcset'] === "undefined"){
+            cover = chartItem.children[1].children[3].children[i].attribs.src;
+          } else if(chartItem.children[1].children[3].children[i].attribs['data-srcset'].split(' ').length === 8){
+            cover = chartItem.children[1].children[3].children[i].attribs['data-srcset'].split(' ')[6];
+          } else if(chartItem.children[1].children[3].children[i].attribs['data-srcset'].split(' ').length === 6){
+            cover = chartItem.children[1].children[3].children[i].attribs['data-srcset'].split(' ')[4];
+          } else if (chartItem.children[1].children[3].children[i].attribs['data-srcset'].split(' ').length === 4) {
+            cover = chartItem.children[1].children[3].children[i].attribs['data-srcset'].split(' ')[2];
+          }
+          break;
+        }
+      }
+    }
+  } catch (e) {
+    cover = '';
+  }
+  return cover;
 } 
 
 /**
@@ -202,17 +200,17 @@ function getCoverFromChartItem(chartItem, rank) {
  *     getPositionLastWeekFromChartItem(<div class="chart-list-item">...</div>) // 4
  */
 function getPositionLastWeekFromChartItem(chartItem) {
-	var positionLastWeek;
-	try {
-		if (chartItem.children[3].children.length > 5) {
-			positionLastWeek = chartItem.children[3].children[5].children[3].children[3].children[0].data
-		} else {
-			positionLastWeek = chartItem.children[3].children[3].children[1].children[3].children[0].data;
-		}
-	} catch (e) {
-		positionLastWeek = '';
-	}
-	return parseInt(positionLastWeek);
+  var positionLastWeek;
+  try {
+    if (chartItem.children[3].children.length > 5) {
+      positionLastWeek = chartItem.children[3].children[5].children[3].children[3].children[0].data
+    } else {
+      positionLastWeek = chartItem.children[3].children[3].children[1].children[3].children[0].data;
+    }
+  } catch (e) {
+    positionLastWeek = '';
+  }
+  return parseInt(positionLastWeek);
 } 
 
 /**
@@ -226,17 +224,17 @@ function getPositionLastWeekFromChartItem(chartItem) {
  *     getPeakPositionFromChartItem(<div class="chart-list-item">...</div>) // 4
  */
 function getPeakPositionFromChartItem(chartItem) {
-	var peakPosition;
-	try {
-		if (chartItem.children[3].children.length > 5) {
-			peakPosition = chartItem.children[3].children[5].children[5].children[3].children[0].data;
-		} else {
-			peakPosition = chartItem.children[3].children[3].children[3].children[3].children[0].data;
-		}
-	} catch (e) {
-		peakPosition = chartItem.attribs['data-rank'];
-	}
-	return parseInt(peakPosition);
+  var peakPosition;
+  try {
+    if (chartItem.children[3].children.length > 5) {
+      peakPosition = chartItem.children[3].children[5].children[5].children[3].children[0].data;
+    } else {
+      peakPosition = chartItem.children[3].children[3].children[3].children[3].children[0].data;
+    }
+  } catch (e) {
+    peakPosition = chartItem.attribs['data-rank'];
+  }
+  return parseInt(peakPosition);
 } 
 
 /**
@@ -250,17 +248,17 @@ function getPeakPositionFromChartItem(chartItem) {
  *     getWeeksOnChartFromChartItem(<div class="chart-list-item">...</div>) // 4
  */
 function getWeeksOnChartFromChartItem(chartItem) {
-	var weeksOnChart;
-	try {
-		if (chartItem.children[3].children.length > 5) {
-			weeksOnChart = chartItem.children[3].children[5].children[7].children[3].children[0].data;
-		} else {
-			weeksOnChart = chartItem.children[3].children[3].children[5].children[3].children[0].data;
-		}
-	} catch (e) {
-		weeksOnChart = '1';
-	}
-	return parseInt(weeksOnChart);
+  var weeksOnChart;
+  try {
+    if (chartItem.children[3].children.length > 5) {
+      weeksOnChart = chartItem.children[3].children[5].children[7].children[3].children[0].data;
+    } else {
+      weeksOnChart = chartItem.children[3].children[3].children[5].children[3].children[0].data;
+    }
+  } catch (e) {
+    weeksOnChart = '1';
+  }
+  return parseInt(weeksOnChart);
 } 
 
 /**
@@ -275,25 +273,25 @@ function getWeeksOnChartFromChartItem(chartItem) {
  *     getNeighboringChart(<div class="dropdown__date-selector-option">...</div>) // { url: 'http://www.billboard.com/charts/hot-100/2016-11-12', date: '2016-11-12' }
  */
 function getNeighboringChart(chartItem, neighboringWeek) {
-	if (neighboringWeek == NeighboringWeek.Previous) {
-		if (chartItem[0].attribs.class.indexOf('dropdown__date-selector-option--disabled') == -1) {
-			return {
-				url: BILLBOARD_BASE_URL + chartItem[0].children[1].attribs.href,
-				date: chartItem[0].children[1].attribs.href.split('/')[3]
-			};
-		}
-	} else {
-		if (chartItem[1].attribs.class.indexOf('dropdown__date-selector-option--disabled') == -1) {
-			return {
-				url: BILLBOARD_BASE_URL + chartItem[1].children[1].attribs.href,
-				date: chartItem[1].children[1].attribs.href.split('/')[3]
-			};
-		}
-	}
-	return {
-		url: '',
-		date: ''
-	}
+  if (neighboringWeek == NeighboringWeek.Previous) {
+    if (chartItem[0].attribs.class.indexOf('dropdown__date-selector-option--disabled') == -1) {
+      return {
+        url: BILLBOARD_BASE_URL + chartItem[0].children[1].attribs.href,
+        date: chartItem[0].children[1].attribs.href.split('/')[3]
+      };
+    }
+  } else {
+    if (chartItem[1].attribs.class.indexOf('dropdown__date-selector-option--disabled') == -1) {
+      return {
+        url: BILLBOARD_BASE_URL + chartItem[1].children[1].attribs.href,
+        date: chartItem[1].children[1].attribs.href.split('/')[3]
+      };
+    }
+  }
+  return {
+    url: '',
+    date: ''
+  }
 } 
 
 /**
@@ -308,70 +306,70 @@ function getNeighboringChart(chartItem, neighboringWeek) {
  *     getChart('hot-100', '2016-08-27', function(err, chart) {...})
  */
 function getChart(chartName, date, cb) {
-	// check if chart was specified
-	if (typeof chartName === 'function') {
-		// if chartName not specified, default to hot-100 chart for current week, 
-		// and set callback method accordingly
-		cb = chartName;
-		chartName = 'hot-100';
-		date = '';
-	}
-	// check if date was specified
-	if (typeof date === 'function') {
-		// if date not specified, default to specified chart for current week, 
-		// and set callback method accordingly
-		cb = date;
-		date = '';
-	}
-	var chart = {};
-	/**
-	 * A song
-	 * @typedef {Object} Song
-	 * @property {string} title - The title of the song
-	 * @property {string} artist - The song's artist
-	 */
+  // check if chart was specified
+  if (typeof chartName === 'function') {
+    // if chartName not specified, default to hot-100 chart for current week, 
+    // and set callback method accordingly
+    cb = chartName;
+    chartName = 'hot-100';
+    date = '';
+  }
+  // check if date was specified
+  if (typeof date === 'function') {
+    // if date not specified, default to specified chart for current week, 
+    // and set callback method accordingly
+    cb = date;
+    date = '';
+  }
+  var chart = {};
+  /**
+   * A song
+   * @typedef {Object} Song
+   * @property {string} title - The title of the song
+   * @property {string} artist - The song's artist
+   */
 
-	/**
-	 * Array of songs
-	 */
-	chart.songs = [];
-	// build request URL string for specified chart and date
-	var requestURL = BILLBOARD_CHARTS_URL + chartName + '/' + date;
-	request(requestURL, function completedRequest(error, response, html) {
-		if (error) {
-			cb(error, null);
-			return;
-		}
-		var $ = cheerio.load(html);
-		// get chart week
-		chart.week = yyyymmddDateFromMonthDayYearDate($('.chart-detail-header__date-selector-button')[0].children[0].data.replace(/\n/g, ''));
-		// get previous and next charts
-		chart.previousWeek = getNeighboringChart($('.dropdown__date-selector-option '), NeighboringWeek.Previous);
-		chart.nextWeek = getNeighboringChart($('.dropdown__date-selector-option '), NeighboringWeek.Next);
-		// push remaining ranked songs into chart.songs array
-		$('.chart-list-item').each(function(index, item) {
-			var rank = index + 1;
-			chart.songs.push({
-				"rank": rank,
-				"title": getTitleFromChartItem(item),
-				"artist": getArtistFromChartItem(item),
-				"cover": getCoverFromChartItem(item, rank),
-				"position" : {
-					"positionLastWeek": getPositionLastWeekFromChartItem(item),
-					"peakPosition": getPeakPositionFromChartItem(item),
-					"weeksOnChart": getWeeksOnChartFromChartItem(item)
-				}
-			});
-		});
-		// callback with chart if chart.songs array was populated
-		if (chart.songs.length > 1){
-			cb(null, chart);
-			return;
-		} else {
-			cb("Songs not found.", null);
-			return;
-		}
-	});
+  /**
+   * Array of songs
+   */
+  chart.songs = [];
+  // build request URL string for specified chart and date
+  var requestURL = BILLBOARD_CHARTS_URL + chartName + '/' + date;
+  request(requestURL, function completedRequest(error, response, html) {
+    if (error) {
+      cb(error, null);
+      return;
+    }
+    var $ = cheerio.load(html);
+    // get chart week
+    chart.week = yyyymmddDateFromMonthDayYearDate($('.chart-detail-header__date-selector-button')[0].children[0].data.replace(/\n/g, ''));
+    // get previous and next charts
+    chart.previousWeek = getNeighboringChart($('.dropdown__date-selector-option '), NeighboringWeek.Previous);
+    chart.nextWeek = getNeighboringChart($('.dropdown__date-selector-option '), NeighboringWeek.Next);
+    // push remaining ranked songs into chart.songs array
+    $('.chart-list-item').each(function(index, item) {
+      var rank = index + 1;
+      chart.songs.push({
+        "rank": rank,
+        "title": getTitleFromChartItem(item),
+        "artist": getArtistFromChartItem(item),
+        "cover": getCoverFromChartItem(item, rank),
+        "position" : {
+          "positionLastWeek": getPositionLastWeekFromChartItem(item),
+          "peakPosition": getPeakPositionFromChartItem(item),
+          "weeksOnChart": getWeeksOnChartFromChartItem(item)
+        }
+      });
+    });
+    // callback with chart if chart.songs array was populated
+    if (chart.songs.length > 1){
+      cb(null, chart);
+      return;
+    } else {
+      cb("Songs not found.", null);
+      return;
+    }
+  });
 
 }
 
@@ -387,47 +385,47 @@ function getChart(chartName, date, cb) {
  *     listCharts(function(err, charts) {...})
  */
 function listCharts(cb) {
-	if (typeof cb !== 'function') {
-		cb('Specified callback is not a function.', null);
-		return;
-	}
-	request(BILLBOARD_CHARTS_URL, function completedRequest(error, response, html) {
-		if (error) {
-			cb(error, null);
-			return;
-		}
-		var $ = cheerio.load(html);
-		/**
-		 * A chart
-		 * @typedef {Object} Chart
-		 * @property {string} name - The name of the chart
-		 * @property {string} url - The url of the chat
-		 */
+  if (typeof cb !== 'function') {
+    cb('Specified callback is not a function.', null);
+    return;
+  }
+  request(BILLBOARD_CHARTS_URL, function completedRequest(error, response, html) {
+    if (error) {
+      cb(error, null);
+      return;
+    }
+    var $ = cheerio.load(html);
+    /**
+     * A chart
+     * @typedef {Object} Chart
+     * @property {string} name - The name of the chart
+     * @property {string} url - The url of the chat
+     */
 
-		/**
-		 * Array of charts
-		 */
-		var charts = [];
-		// push charts into charts array
-		$('.chart-panel__link').each(function(index, item) {
-			var chart = {};
-			chart.name = toTitleCase($(this)[0].attribs.href.replace('/charts/', '').replace(/-/g, ' '));
-			chart.url = "https://www.billboard.com" + $(this)[0].attribs.href;
-			charts.push(chart);
-		});
-		// callback with charts if charts array was populated
-		if (charts.length > 0){
-			cb(null, charts);
-			return;
-		} else {
-			cb("No charts found.", null);
-			return;
-		}
-	});
+    /**
+     * Array of charts
+     */
+    var charts = [];
+    // push charts into charts array
+    $('.chart-panel__link').each(function(index, item) {
+      var chart = {};
+      chart.name = toTitleCase($(this)[0].attribs.href.replace('/charts/', '').replace(/-/g, ' '));
+      chart.url = "https://www.billboard.com" + $(this)[0].attribs.href;
+      charts.push(chart);
+    });
+    // callback with charts if charts array was populated
+    if (charts.length > 0){
+      cb(null, charts);
+      return;
+    } else {
+      cb("No charts found.", null);
+      return;
+    }
+  });
 }
 
 // export getChart and listCharts functions
 module.exports = {
-	getChart,
-	listCharts
+  getChart,
+  listCharts
 }

@@ -3,18 +3,6 @@ const { assert } = require('chai');
 const { getChart } = require('../billboard-top-100.js');
 const { listCharts } = require('../billboard-top-100.js');
 
-/**
- * Gets date for PST timezone
- *
- * @return {date} The date
- */
-function getPSTDate() {
-  const offset = -8;
-  const secPerHour = 3600;
-  const msPerSec = 1000;
-  return new Date(new Date().getTime() + offset * secPerHour * msPerSec);
-}
-
 describe('getChart()', () => {
   describe('get a past chart (hot-100: week of 2016-11-19)', () => {
     it('should callback with the hot-100 chart for the week of 2016-11-19', (done) => {

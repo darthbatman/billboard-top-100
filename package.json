@@ -8,17 +8,18 @@
   },
   "dependencies": {
     "cheerio": "^0.20.0",
-    "eslint": "^5.16.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.17.3",
     "request": "^2.88.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "eslint": "^5.16.0",
     "mocha": "^6.1.4"
   },
   "scripts": {
-    "test": "mocha"
+    "lint": "./node_modules/.bin/eslint billboard-top-100.js test/test.js",
+    "test": "mocha --recursive"
   },
   "repository": {
     "type": "git",

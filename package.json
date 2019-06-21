@@ -19,7 +19,8 @@
   },
   "scripts": {
     "lint": "./node_modules/.bin/eslint billboard-top-100.js test/test.js",
-    "test": "mocha --recursive"
+    "test": "mocha --recursive",
+    "coverage": "nyc npm run test"
   },
   "repository": {
     "type": "git",

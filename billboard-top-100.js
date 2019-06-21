@@ -1,14 +1,8 @@
-// REQUIRES
-
 const request = require('request');
 const cheerio = require('cheerio');
 
-// CONSTANTS
-
 const BILLBOARD_BASE_URL = 'http://www.billboard.com';
 const BILLBOARD_CHARTS_URL = `${BILLBOARD_BASE_URL}/charts/`;
-
-// GLOBALS
 
 /**
  * Enum for types of neighboring week.
@@ -19,8 +13,6 @@ const NeighboringWeek = Object.freeze({
   Previous: 1,
   Next: 2,
 });
-
-// HELPER FUNCTIONS
 
 /**
  * Converts Month Day, Year date to YYYY-MM-DD date
@@ -78,8 +70,6 @@ function yyyymmddDateFromMonthDayYearDate(monthDayYearDate) {
   }
   return `${yyyy}-${mm}-${dd}`;
 }
-
-// IMPLEMENTATION FUNCTIONS
 
 /**
  * Gets the title from the specified chart item

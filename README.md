@@ -1,4 +1,7 @@
-﻿# billboard-top-100
+﻿<h1 align="left">
+  <img src="logo.png" width="64%" />
+  <br />
+</h1>
 
 Node.js API to retrieve top songs, albums, and artists from Billboard's charts
 

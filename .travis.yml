@@ -1,12 +1,16 @@
 language: node_js
 node_js:
-  - "8"
-  - "9"
-  - "10"
+- '8'
+- '9'
+- '10'
 script:
-  - npm run lint
-  - npm test
-  - npm run coverage
-after_success:
-  - npm version patch
-  - npm publish
+- npm run lint
+- npm test
+- npm run coverage
+deploy:
+  provider: npm
+  email: "masandrishi@gmail.com"
+  api_key:
+    secure: DQRSEzecfUzNYvbwwSG6b3YIWo2JcPgUx2VLaYIYrmpZTJ13neEGGB36ojjjPQIxusrhVUpPIUvE3FwH1W9pM61NcBFKaBmjcQpZt56+E8P1WZ1sX4VwGDCrDLZNBc0Ek+sRjmg58HfkHtd5HD91QeYhsh038HoCnaygV/vLrQ+RGf4XDLlAX6dR5H00k8pI5NkBgqI/QZLCTGbgXxAMA6xZXJbhuyGX4qWyDcOOmgfnKs8ZYXTCo9I3tkAuTAxd83J1Dhg0vqWHQk9k/YgewNRq4gF1CPyR2hTLLtXtBy4KHUKRYxBcWSTTCo8txA1pxcEZE0k4tdluH/2VNR/ZqN8oZzmOMewA7gqxzHwRpgxXHv+F7RXV6QQvzf1woKZ90LEFOkyhBT7IQj5vN2Rs5RCWeLehYyrL6iZwubIp8nluoZUAL1qhxHPbeoUdzwllR159wB/wwEC+rR/uUp/08z+LfrcbnH0lOvmrHjnHIH+ANDiBZT4anQ9PWYA+4YDvVBn7OtPgjYKJTg8fbYeqsVRiUlQxoinDS+2GNYcgQkGP1ggwe1i5fJ+rmYCbypp5IBy/tj6a7EsGf0S5UMXo2Qdff8m/WNxJzkB0f96lCOwenbwtL41JjmG2rZN+u92GKfLSkX8cFUp5SHQTmNfmH2vqmQ80YdBJEjs3Uxk8yy4=
+  on:
+    tags: true

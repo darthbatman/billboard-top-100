@@ -3,14 +3,10 @@ node_js:
   - "8"
   - "9"
   - "10"
-install:
-  - npm install -g nyc
-  - npm install -g codecov
 script:
   - npm run lint
   - npm test
   - npm run coverage
-  - codecov
 after_success:
   - npm version patch
   - npm publish

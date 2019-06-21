@@ -14,13 +14,15 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "codecov": "^3.5.0",
     "eslint": "^5.16.0",
-    "mocha": "^6.1.4"
+    "mocha": "^6.1.4",
+    "nyc": "^14.1.1"
   },
   "scripts": {
-    "lint": "./node_modules/.bin/eslint billboard-top-100.js test/test.js",
+    "lint": "eslint billboard-top-100.js test/test.js",
     "test": "mocha --recursive",
-    "coverage": "nyc npm run test && nyc report --reporter=text-lcov > coverage.lcov"
+    "coverage": "nyc npm run test && nyc report --reporter=text-lcov > coverage.lcov && codecov"
   },
   "repository": {
     "type": "git",

@@ -7,6 +7,10 @@ script:
 - npm run lint
 - npm test
 - npm run coverage
+branches:
+  only:
+  - master
+  - /v\d+\.\d+[a-z]/
 deploy:
   provider: npm
   email: "masandrishi@gmail.com"

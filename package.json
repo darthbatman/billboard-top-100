@@ -3,18 +3,22 @@
   "version": "2.4.7",
   "description": "Gets the top songs, albums, and artists from Billboard's charts",
   "main": "billboard-top-100.js",
+  "directories": {
+    "test": "tests"
+  },
   "dependencies": {
     "cheerio": "^0.20.0",
-    "request": "^2.72.0"
-  },
-  "devDependencies": {
     "eslint": "^5.16.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.17.3",
-    "jshint": "^2.9.4"
+    "request": "^2.88.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.1.4"
   },
   "scripts": {
-    "test": "./node_modules/jshint/bin/jshint ./tests/test.js"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -29,13 +33,10 @@
     "songs",
     "music"
   ],
-  "author": "Rishi Masand <darthanakin44@gmail.com> (https://github.com/darthbatman)",
+  "author": "Rishi Masand <masandrishi@gmail.com> (https://github.com/darthbatman)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/darthbatman/billboard-top-100/issues"
   },
-  "homepage": "https://github.com/darthbatman/billboard-top-100#readme",
-  "directories": {
-    "test": "tests"
-  }
+  "homepage": "https://github.com/darthbatman/billboard-top-100#readme"
 }

@@ -101,7 +101,7 @@ function getTitleFromChartItem(chartItem) {
   } catch (e) {
     title = '';
   }
-  return title;
+  return title.trim();
 }
 
 /**
@@ -128,7 +128,7 @@ function getArtistFromChartItem(chartItem) {
       artist = '';
     }
   }
-  return artist;
+  return artist.trim();
 }
 
 /**
@@ -172,7 +172,7 @@ function getCoverFromChartItem(chartItem, rank) {
   } catch (e) {
     cover = '';
   }
-  return cover;
+  return cover.trim();
 }
 
 /**
@@ -262,14 +262,14 @@ function getNeighboringChart(chartItem, neighboringWeek) {
   if (neighboringWeek === NeighboringWeek.Previous) {
     if (chartItem[0].attribs.class.indexOf('dropdown__date-selector-option--disabled') === -1) {
       return {
-        url: BILLBOARD_BASE_URL + chartItem[0].children[1].attribs.href,
-        date: chartItem[0].children[1].attribs.href.split('/')[3],
+        url: BILLBOARD_BASE_URL + chartItem[0].children[1].attribs.href.trim(),
+        date: chartItem[0].children[1].attribs.href.split('/')[3].trim(),
       };
     }
   } else if (chartItem[1].attribs.class.indexOf('dropdown__date-selector-option--disabled') === -1) {
     return {
-      url: BILLBOARD_BASE_URL + chartItem[1].children[1].attribs.href,
-      date: chartItem[1].children[1].attribs.href.split('/')[3],
+      url: BILLBOARD_BASE_URL + chartItem[1].children[1].attribs.href.trim(),
+      date: chartItem[1].children[1].attribs.href.split('/')[3].trim(),
     };
   }
   return { url: '', date: '' };
@@ -388,10 +388,10 @@ function listCharts(cb) {
      */
     const charts = [];
     // push charts into charts array
-    $('.site-header__subnav-link').each((_, item) => {
+    $('.chart-panel__link').each((_, item) => {
       const chart = {};
-      chart.name = item.children[0].data;
-      chart.url = item.attribs.href;
+      chart.name = item.children[1].children[1].children[0].data.trim();
+      chart.url = `${BILLBOARD_BASE_URL}${item.attribs.href}`;
       charts.push(chart);
     });
     // callback with charts if charts array was populated

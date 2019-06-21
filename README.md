@@ -2,6 +2,7 @@
 Node.js API to retrieve top songs, albums, and artists from Billboard's charts
 
 [![Build Status](https://travis-ci.org/darthbatman/billboard-top-100.svg?branch=master)](https://travis-ci.org/darthbatman/billboard-top-100)
+[![codecov](https://codecov.io/gh/darthbatman/billboard-top-100/branch/master/graph/badge.svg)](https://codecov.io/gh/darthbatman/billboard-top-100)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/darthbatman/billboard-top-100)
 
 

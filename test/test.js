@@ -93,7 +93,7 @@ describe('getChart()', () => {
 
 describe('listCharts()', () => {
   describe('get all charts', () => {
-    it('should callback with all charts', (done) => {
+    it('should callback with all available charts', (done) => {
       listCharts((err, charts) => {
         if (err) done(err);
 

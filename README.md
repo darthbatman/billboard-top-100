@@ -19,11 +19,11 @@ npm install billboard-top-100
 # example
 
 ```js
-var getChart = require("billboard-top-100").getChart;
+const { getChart } = require('../billboard-top-100.js');
 
 // date format YYYY-MM-DD
 
-getChart('hot-100', '2016-08-27', function(err, chart) {
+getChart('hot-100', '2016-08-27', (err, chart) => {
   if (err) console.log(err);
   console.log(chart.week) // prints the week of the chart in the date format YYYY-MM-DD
   console.log(chart.previousWeek.url) // prints the URL of the previous week's chart
@@ -41,21 +41,21 @@ getChart('hot-100', '2016-08-27', function(err, chart) {
 // chartName defaults to hot-100
 // date defaults to saturday of this week
 
-getChart(function(err, chart) {
+getChart((err, chart) => {
   if (err) console.log(err);
   // use chart
 });
 
 // date defaults to saturday of this week
 
-getChart('hot-100', function(err, chart) {
+getChart('hot-100', (err, chart) => {
   if (err) console.log(err);
   // use chart
 });
 
 // 'All Time' chart
 
-getChart('greatest-billboard-200-albums', function(err, chart) {
+getChart('greatest-billboard-200-albums', (err, chart) => {
   if (err) console.log(err);
   console.log(chart.songs); //prints array of top 200 albums
   console.log(chart.songs[3]); //prints album with rank: 4
@@ -67,9 +67,9 @@ getChart('greatest-billboard-200-albums', function(err, chart) {
 
 // list all available charts
 
-var listCharts = require('billboard-top-100').listCharts;
+const { listCharts } = require('../billboard-top-100.js');
 
-listCharts(function(err, charts) {
+listCharts((err, charts) => {
   if (err) console.log(err);
   console.log(charts); // prints array of all charts
 });

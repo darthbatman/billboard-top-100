@@ -9,14 +9,13 @@ Node.js API to retrieve top songs, albums, and artists from Billboard's charts
 [![codecov](https://codecov.io/gh/darthbatman/billboard-top-100/branch/master/graph/badge.svg)](https://codecov.io/gh/darthbatman/billboard-top-100)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/darthbatman/billboard-top-100)
 
+## install
 
-# install
-
-```
+```bash
 npm install billboard-top-100
 ```
 
-# example
+## example
 
 ```js
 const { getChart } = require('../billboard-top-100.js');
@@ -76,7 +75,7 @@ listCharts((err, charts) => {
 
 ```
 
-# api
+## api
 
 ### listCharts(callback)
 
@@ -84,7 +83,7 @@ Type: `function`
 
 Returns array of chartObjects separated by category
 
-### getChart([chartName], [date], callback)
+### getChart([chartName][,date], callback)
 
 Type: `function`
 
@@ -186,7 +185,6 @@ Type: `object`
 
 Position information of song.
 
-
-# license
+## license
 
 MIT © [Rishi Masand](https://github.com/darthbatman)

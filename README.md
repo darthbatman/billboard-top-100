@@ -7,6 +7,7 @@ Node.js API to retrieve top songs, albums, and artists from Billboard's charts
 
 [![Build Status](https://travis-ci.org/darthbatman/billboard-top-100.svg?branch=master)](https://travis-ci.org/darthbatman/billboard-top-100)
 [![codecov](https://codecov.io/gh/darthbatman/billboard-top-100/branch/master/graph/badge.svg)](https://codecov.io/gh/darthbatman/billboard-top-100)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/50e674cf4066403da4381764b5b50a72)](https://www.codacy.com/app/darthbatman/billboard-top-100?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=darthbatman/billboard-top-100&amp;utm_campaign=Badge_Grade)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/darthbatman/billboard-top-100)
 
 ## install
@@ -83,7 +84,7 @@ Type: `function`
 
 Returns array of chartObjects separated by category
 
-### getChart([chartName][,date], callback)
+### getChart(\[chartName]\[,date], callback)
 
 Type: `function`
 

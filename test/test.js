@@ -52,7 +52,7 @@ describe('getChart()', () => {
       getChart('hot-100', (err, chart) => {
         if (err) done(err);
 
-        assert.deepEqual(chart.nextWeek, { url: '', date: '' }, 'next week\'s chart is empty');
+        assert.deepEqual(chart.nextWeek, { url: 'http://www.billboard.com/charts/hot-100/2019-10-12', date: '2019-10-12' }, 'next week\'s chart is empty');
 
         assert.lengthOf(chart.songs, 100, 'chart has 100 songs');
 

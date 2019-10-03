@@ -1,5 +1,6 @@
 const request = require('request');
 const cheerio = require('cheerio');
+const moment = require('moment');
 
 const BILLBOARD_BASE_URL = 'http://www.billboard.com';
 const BILLBOARD_CHARTS_URL = `${BILLBOARD_BASE_URL}/charts/`;
@@ -14,62 +15,7 @@ const NeighboringWeek = Object.freeze({
   Next: 2,
 });
 
-/**
- * Converts Month Day, Year date to YYYY-MM-DD date
- *
- * @param {string} monthDayYearDate - The Month Day, Year date
- * @return {string} The YYYY-MM-DD date
- *
- * @example
- *
- *     yyyymmddDateFromMonthDayYearDate("November 19, 2016") // 2016-11-19
- */
-function yyyymmddDateFromMonthDayYearDate(monthDayYearDate) {
-  const yyyy = monthDayYearDate.split(',')[1].trim();
-  const dd = monthDayYearDate.split(' ')[1].split(',')[0];
-  let mm = '';
-  switch (monthDayYearDate.split(' ')[0]) {
-    case 'January':
-      mm = '01';
-      break;
-    case 'February':
-      mm = '02';
-      break;
-    case 'March':
-      mm = '03';
-      break;
-    case 'April':
-      mm = '04';
-      break;
-    case 'May':
-      mm = '05';
-      break;
-    case 'June':
-      mm = '06';
-      break;
-    case 'July':
-      mm = '07';
-      break;
-    case 'August':
-      mm = '08';
-      break;
-    case 'September':
-      mm = '09';
-      break;
-    case 'October':
-      mm = '10';
-      break;
-    case 'November':
-      mm = '11';
-      break;
-    case 'December':
-      mm = '12';
-      break;
-    default:
-      break;
-  }
-  return `${yyyy}-${mm}-${dd}`;
-}
+
 
 /**
  * Gets the title from the specified chart item
@@ -81,13 +27,10 @@ function yyyymmddDateFromMonthDayYearDate(monthDayYearDate) {
  *
  *     getTitleFromChartItem(<div class="chart-list-item">...</div>) // 'The Real Slim Shady'
  */
-function getTitleFromChartItem(chartItem) {
+function getTitleFromChartItem(chartItem, $) {
   let title;
   try {
-    title = chartItem.children[1].children[5].children[1].children[1].children[1].children[0].data.replace(/\n/g, '');
-    if (title === '') {
-      title = chartItem.children[1].children[5].children[1].children[1].children[1].children[0].next.children[0].data.replace(/\n/g, '');
-    }
+    title = $('.chart-element__information__song', chartItem).text()
   } catch (e) {
     title = '';
   }
@@ -104,20 +47,14 @@ function getTitleFromChartItem(chartItem) {
  *
  *     getArtistFromChartItem(<div class="chart-list-item">...</div>) // 'Eminem'
  */
-function getArtistFromChartItem(chartItem) {
+function getArtistFromChartItem(chartItem, $) {
   let artist;
-  try {
-    artist = chartItem.children[1].children[5].children[1].children[3].children[0].data.replace(/\n/g, '');
+  try { 
+    artist = $('.chart-element__information__artist', chartItem).text()    
   } catch (e) {
     artist = '';
   }
-  if (artist.trim().length < 1) {
-    try {
-      artist = chartItem.children[1].children[5].children[1].children[3].children[1].children[0].data.replace(/\n/g, '');
-    } catch (e) {
-      artist = '';
-    }
-  }
+  
   return artist.trim();
 }
 
@@ -132,33 +69,12 @@ function getArtistFromChartItem(chartItem) {
  *
  *     getCoverFromChartItem(<div class="chart-list-item">...</div>) // 'https://charts-static.billboard.com/img/2016/12/locash-53x53.jpg'
  */
-function getCoverFromChartItem(chartItem, rank) {
+function getCoverFromChartItem(chartItem, $) {
   let cover;
+
   try {
-    if (rank === 1) {
-      if (typeof chartItem.children[1].children[3].children[5].attribs['data-srcset'] === 'undefined') {
-        cover = chartItem.children[1].children[3].children[5].attribs['data-src'];
-      } else if (chartItem.children[1].children[3].children[5].attribs['data-srcset'].split(' ').length === 8) {
-        [, , , , , , cover] = chartItem.children[1].children[3].children[5].attribs['data-srcset'].split(' ');
-      } else if (chartItem.children[1].children[3].children[5].attribs['data-srcset'].split(' ').length === 6) {
-        [, , , , cover] = chartItem.children[1].children[3].children[5].attribs['data-srcset'].split(' ');
-      }
-    } else {
-      for (let i = 0; i < chartItem.children[1].children[3].children.length; i += 1) {
-        if (chartItem.children[1].children[3].children[i].name === 'img') {
-          if (typeof chartItem.children[1].children[3].children[i].attribs['data-srcset'] === 'undefined') {
-            cover = chartItem.children[1].children[3].children[i].attribs.src;
-          } else if (chartItem.children[1].children[3].children[i].attribs['data-srcset'].split(' ').length === 8) {
-            [, , , , , , cover] = chartItem.children[1].children[3].children[i].attribs['data-srcset'].split(' ');
-          } else if (chartItem.children[1].children[3].children[i].attribs['data-srcset'].split(' ').length === 6) {
-            [, , , , cover] = chartItem.children[1].children[3].children[i].attribs['data-srcset'].split(' ');
-          } else if (chartItem.children[1].children[3].children[i].attribs['data-srcset'].split(' ').length === 4) {
-            [, , cover] = chartItem.children[1].children[3].children[i].attribs['data-srcset'].split(' ');
-          }
-          break;
-        }
-      }
-    }
+    cover = $('.chart-element__image', chartItem).css('background-image').substr(5);
+    cover = cover.substr(0, cover.length-2)   
   } catch (e) {
     cover = '';
   }
@@ -175,14 +91,10 @@ function getCoverFromChartItem(chartItem, rank) {
  *
  *     getPositionLastWeekFromChartItem(<div class="chart-list-item">...</div>) // 4
  */
-function getPositionLastWeekFromChartItem(chartItem) {
+function getPositionLastWeekFromChartItem(chartItem, $) {
   let positionLastWeek;
   try {
-    if (chartItem.children[3].children.length > 5) {
-      positionLastWeek = chartItem.children[3].children[5].children[3].children[3].children[0].data;
-    } else {
-      positionLastWeek = chartItem.children[3].children[3].children[1].children[3].children[0].data;
-    }
+    positionLastWeek = $('.chart-element__meta.text--last', chartItem).text()
   } catch (e) {
     positionLastWeek = '';
   }
@@ -199,16 +111,12 @@ function getPositionLastWeekFromChartItem(chartItem) {
  *
  *     getPeakPositionFromChartItem(<div class="chart-list-item">...</div>) // 4
  */
-function getPeakPositionFromChartItem(chartItem) {
+function getPeakPositionFromChartItem(chartItem, $) {
   let peakPosition;
   try {
-    if (chartItem.children[3].children.length > 5) {
-      peakPosition = chartItem.children[3].children[5].children[5].children[3].children[0].data;
-    } else {
-      peakPosition = chartItem.children[3].children[3].children[3].children[3].children[0].data;
-    }
+    peakPosition = $('.chart-element__meta.text--peak', chartItem).text()
   } catch (e) {
-    peakPosition = chartItem.attribs['data-rank'];
+    peakPosition = '';
   }
   return parseInt(peakPosition, 10);
 }
@@ -223,46 +131,14 @@ function getPeakPositionFromChartItem(chartItem) {
  *
  *     getWeeksOnChartFromChartItem(<div class="chart-list-item">...</div>) // 4
  */
-function getWeeksOnChartFromChartItem(chartItem) {
+function getWeeksOnChartFromChartItem(chartItem, $) {
   let weeksOnChart;
   try {
-    if (chartItem.children[3].children.length > 5) {
-      weeksOnChart = chartItem.children[3].children[5].children[7].children[3].children[0].data;
-    } else {
-      weeksOnChart = chartItem.children[3].children[3].children[5].children[3].children[0].data;
-    }
+    weeksOnChart = $('.chart-element__meta.text--week', chartItem).text()
   } catch (e) {
     weeksOnChart = '1';
   }
   return parseInt(weeksOnChart, 10);
-}
-
-/**
- * Gets the neighboring chart for a given chart item and neighboring week type.
- *
- * @param {HTMLElement} chartItem - The chart item
- * @param {enum} neighboringWeek - The type of neighboring week
- * @return {object} The neighboring chart with url and week
- *
- * @example
- *
- *     getNeighboringChart(<div class="dropdown__date-selector-option">...</div>) // { url: 'http://www.billboard.com/charts/hot-100/2016-11-12', date: '2016-11-12' }
- */
-function getNeighboringChart(chartItem, neighboringWeek) {
-  if (neighboringWeek === NeighboringWeek.Previous) {
-    if (chartItem[0].attribs.class.indexOf('dropdown__date-selector-option--disabled') === -1) {
-      return {
-        url: BILLBOARD_BASE_URL + chartItem[0].children[1].attribs.href.trim(),
-        date: chartItem[0].children[1].attribs.href.split('/')[3].trim(),
-      };
-    }
-  } else if (chartItem[1].attribs.class.indexOf('dropdown__date-selector-option--disabled') === -1) {
-    return {
-      url: BILLBOARD_BASE_URL + chartItem[1].children[1].attribs.href.trim(),
-      date: chartItem[1].children[1].attribs.href.split('/')[3].trim(),
-    };
-  }
-  return { url: '', date: '' };
 }
 
 /**
@@ -314,24 +190,40 @@ function getChart(name, date, cb) {
       callback(error, null);
       return;
     }
+
     const $ = cheerio.load(html);
     // get chart week
-    chart.week = yyyymmddDateFromMonthDayYearDate($('.chart-detail-header__date-selector-button')[0].children[0].data.replace(/\n/g, ''));
-    // get previous and next charts
-    chart.previousWeek = getNeighboringChart($('.dropdown__date-selector-option '), NeighboringWeek.Previous);
-    chart.nextWeek = getNeighboringChart($('.dropdown__date-selector-option '), NeighboringWeek.Next);
+    const date = moment(new Date($('.date-selector__button').text().trim()));
+    chart.week = date.format('YYYY-MM-DD');
+    
+    
+    // yyyymmddDateFromMonthDayYearDate($('.chart-detail-header__date-selector-button')[0].children[0].data.replace(/\n/g, ''));
+    // // get previous and next charts
+    const prevWeek = date.subtract(7, 'days').format('YYYY-MM-DD')
+    chart.previousWeek = {
+      date: prevWeek,
+      url: `${BILLBOARD_CHARTS_URL}${chartName}/${prevWeek}`
+    };
+
+    const nextWeek = date.add(14, 'days').format('YYYY-MM-DD');
+    chart.nextWeek = {
+      date: nextWeek, 
+      url: `${BILLBOARD_CHARTS_URL}${chartName}/${nextWeek}`
+    };
+
     // push remaining ranked songs into chart.songs array
-    $('.chart-list-item').each((index, item) => {
+    $('.chart-list__element').each((index, item) => {
       const rank = index + 1;
+      
       chart.songs.push({
         rank,
-        title: getTitleFromChartItem(item),
-        artist: getArtistFromChartItem(item),
-        cover: getCoverFromChartItem(item, rank),
+        title: getTitleFromChartItem(item, $),
+        artist: getArtistFromChartItem(item, $),
+        cover: getCoverFromChartItem(item, $),
         position: {
-          positionLastWeek: getPositionLastWeekFromChartItem(item),
-          peakPosition: getPeakPositionFromChartItem(item),
-          weeksOnChart: getWeeksOnChartFromChartItem(item),
+          positionLastWeek: getPositionLastWeekFromChartItem(item, $),
+          peakPosition: getPeakPositionFromChartItem(item, $),
+          weeksOnChart: getWeeksOnChartFromChartItem(item, $),
         },
       });
     });

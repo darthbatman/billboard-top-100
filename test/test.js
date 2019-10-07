@@ -21,7 +21,7 @@ describe('getChart()', () => {
           rank: 1,
           title: 'Closer',
           artist: 'The Chainsmokers Featuring Halsey',
-          cover: 'https://charts-static.billboard.com/img/2016/08/the-chainsmokers-9iv-53x53.jpg',
+          cover: 'http://www.billboard.com/img/2016/08/the-chainsmokers-9iv.jpg',
           position: { positionLastWeek: 1, peakPosition: 1, weeksOnChart: 14 },
         }, 'first song is correct');
 
@@ -30,7 +30,7 @@ describe('getChart()', () => {
           title: 'Tiimmy Turner',
           artist: 'Desiigner',
           cover:
-           'https://charts-static.billboard.com/img/2016/08/desiigner-l9j-87x87.jpg',
+           'http://www.billboard.com/img/2016/08/desiigner-l9j.jpg',
           position: { positionLastWeek: 37, peakPosition: 34, weeksOnChart: 15 },
         }, 'arbitrary (38th) song is correct');
 
@@ -38,8 +38,8 @@ describe('getChart()', () => {
           rank: 100,
           title: 'Cool Girl',
           artist: 'Tove Lo',
-          cover: 'https://charts-static.billboard.com/img/2016/08/tove-lo-vxl-174x174.jpg',
-          position: { positionLastWeek: NaN, peakPosition: 100, weeksOnChart: 1 },
+          cover: 'http://www.billboard.com/img/2016/08/tove-lo-vxl.jpg',
+          position: { positionLastWeek: NaN, peakPosition: 84, weeksOnChart: 5 },
         }, 'last song is correct');
 
         done();
@@ -51,8 +51,6 @@ describe('getChart()', () => {
     it('should callback with the hot-100 chart for this week', (done) => {
       getChart('hot-100', (err, chart) => {
         if (err) done(err);
-
-        assert.deepEqual(chart.nextWeek, { url: '', date: '' }, 'next week\'s chart is empty');
 
         assert.lengthOf(chart.songs, 100, 'chart has 100 songs');
 

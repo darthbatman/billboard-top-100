@@ -6,143 +6,6 @@ const BILLBOARD_BASE_URL = 'http://www.billboard.com';
 const BILLBOARD_CHARTS_URL = `${BILLBOARD_BASE_URL}/charts/`;
 
 /**
- * Enum for types of neighboring week.
- * @readonly
- * @enum {number}
- */
-const NeighboringWeek = Object.freeze({
-  Previous: 1,
-  Next: 2,
-});
-
-/**
- * Gets the title from the specified chart item
- *
- * @param {HTMLElement} chartItem - The chart item
- * @param {jQueryObject} $ - The jQuery object
- * @return {string} The title
- *
- * @example
- *
- *     getTitleFromChartItem(<div class="chart-list-item">...</div>, $) // 'The Real Slim Shady'
- */
-function getTitleFromChartItem(chartItem, $) {
-  let title;
-  try {
-    title = $('.chart-element__information__song', chartItem).text();
-  } catch (e) {
-    title = '';
-  }
-  return title.trim();
-}
-
-/**
- * Gets the artist from the specified chart item
- *
- * @param {HTMLElement} chartItem - The chart item
- * @param {jQueryObject} $ - The jQuery object
- * @return {string} The artist
- *
- * @example
- *
- *     getArtistFromChartItem(<div class="chart-list-item">...</div>, $) // 'Eminem'
- */
-function getArtistFromChartItem(chartItem, $) {
-  let artist;
-  try {
-    artist = $('.chart-element__information__artist', chartItem).text();
-  } catch (e) {
-    artist = '';
-  }
-  return artist.trim();
-}
-
-/**
- * Gets the cover from the specified chart item
- *
- * @param {HTMLElement} chartItem - The chart item
- * @param {jQueryObject} $ - The jQuery object
- * @return {string} The cover url string
- *
- * @example
- *
- *     getCoverFromChartItem(<div class="chart-list-item">...</div>, $) // 'https://charts-static.billboard.com/img/2016/12/locash-53x53.jpg'
- */
-function getCoverFromChartItem(chartItem, $) {
-  let cover;
-  try {
-    cover = $('.chart-element__image', chartItem).css('background-image').substr(5);
-    cover = cover.substr(0, cover.length - 2);
-  } catch (e) {
-    cover = '';
-  }
-  return cover.trim();
-}
-
-/**
- * Gets the position last week from the specified chart item
- *
- * @param {HTMLElement} chartItem - The chart item
- * @param {jQueryObject} $ - The jQuery object
- * @return {number} The position last week
- *
- * @example
- *
- *     getPositionLastWeekFromChartItem(<div class="chart-list-item">...</div>, $) // 4
- */
-function getPositionLastWeekFromChartItem(chartItem, $) {
-  let positionLastWeek;
-  try {
-    positionLastWeek = $('.chart-element__meta.text--last', chartItem).text();
-  } catch (e) {
-    positionLastWeek = '';
-  }
-  return parseInt(positionLastWeek, 10);
-}
-
-/**
- * Gets the peak position from the specified chart item
- *
- * @param {HTMLElement} chartItem - The chart item
- * @param {jQueryObject} $ - The jQuery object
- * @return {number} The peak position
- *
- * @example
- *
- *     getPeakPositionFromChartItem(<div class="chart-list-item">...</div>, $) // 4
- */
-function getPeakPositionFromChartItem(chartItem, $) {
-  let peakPosition;
-  try {
-    peakPosition = $('.chart-element__meta.text--peak', chartItem).text();
-  } catch (e) {
-    peakPosition = '';
-  }
-  return parseInt(peakPosition, 10);
-}
-
-/**
- * Gets the weeks on chart last week from the specified chart item
- *
- * @param {HTMLElement} chartItem - The chart item
- * @param {jQueryObject} $ - The jQuery object
- * @return {number} The weeks on chart
- *
- * @example
- *
- *     getWeeksOnChartFromChartItem(<div class="chart-list-item">...</div>, $) // 4
- */
-function getWeeksOnChartFromChartItem(chartItem, $) {
-  let weeksOnChart;
-  try {
-    weeksOnChart = $('.chart-element__meta.text--week', chartItem).text();
-  } catch (e) {
-    weeksOnChart = '1';
-  }
-  return parseInt(weeksOnChart, 10);
-}
-
-/**
  * Gets information for specified chart and date
  *
  * @param {string} chartName - The specified chart
@@ -194,9 +57,8 @@ function getChart(name, date, cb) {
     const $ = cheerio.load(html);
 
     const rawData = html.split('data-charts="')[1].split('data-icons')[0];
-    const unescapedData = rawData.replace(/&quot;/g, '"').replace(/&quot;/g, '"').replace(/\//g, '/');
-    const data = JSON.parse(unescapedData.substring(0, unescapedData.length - 11));
-    console.log(data);
+    const unescapedData = rawData.replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/\//g, '/');
+    const elements = JSON.parse(unescapedData.substring(0, unescapedData.length - 11));
 
     const d = moment(new Date($('.date-selector__button').text().trim()));
     chart.week = d.format('YYYY-MM-DD');
@@ -214,21 +76,26 @@ function getChart(name, date, cb) {
       url: `${BILLBOARD_CHARTS_URL}${chartName}/${nextWeek}`,
     };
 
-    // push remaining ranked songs into chart.songs array
-    $('.chart-list__element').each((index, item) => {
-      const rank = index + 1;
+    for (let i = 0; i < elements.length; i += 1) {
+      let coverPath = '';
+      if (elements[i].title_images.sizes === undefined) {
+        coverPath = elements[i].title_images.original;
+      } else {
+        coverPath = elements[i].title_images.sizes.original.Name;
+      }
       chart.songs.push({
-        rank,
-        title: getTitleFromChartItem(item, $),
-        artist: getArtistFromChartItem(item, $),
-        cover: getCoverFromChartItem(item, $),
+        rank: elements[i].rank,
+        title: elements[i].title,
+        artist: elements[i].artist_name,
+        cover: `${BILLBOARD_BASE_URL}${coverPath}`,
         position: {
-          positionLastWeek: getPositionLastWeekFromChartItem(item, $),
-          peakPosition: getPeakPositionFromChartItem(item, $),
-          weeksOnChart: getWeeksOnChartFromChartItem(item, $),
+          positionLastWeek: parseInt(elements[i].history.last_week, 10),
+          peakPosition: parseInt(elements[i].history.peak_rank, 10),
+          weeksOnChart: parseInt(elements[i].history.weeks_on_chart, 10),
         },
       });
-    });
+    }
+
     // callback with chart if chart.songs array was populated
     if (chart.songs.length > 1) {
       callback(null, chart);

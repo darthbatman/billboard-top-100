@@ -21,7 +21,7 @@ describe('getChart()', () => {
           rank: 1,
           title: 'Closer',
           artist: 'The Chainsmokers Featuring Halsey',
-          cover: '',
+          cover: 'https://charts-static.billboard.com/img/2016/08/the-chainsmokers-9iv-53x53.jpg',
           position: { positionLastWeek: 1, peakPosition: 1, weeksOnChart: 14 },
         }, 'first song is correct');
 

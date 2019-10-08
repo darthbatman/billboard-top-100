@@ -101,7 +101,7 @@ describe('getChart()', () => {
           title: 'Quality Control: Control The Streets, Volume 2',
           artist: 'Various Artists',
           cover:
-           'https://charts-static.billboard.com/assets/1551380838/images/charts/bb-placeholder-new.jpg',
+           'https://assets.billboard.com/assets/1570131897/images/charts/bb-placeholder-new.jpg',
           position: { positionLastWeek: 13, peakPosition: 3, weeksOnChart: 6 },
         }, 'no images sizes song is correct');
 

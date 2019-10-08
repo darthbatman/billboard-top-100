@@ -5,7 +5,7 @@ const moment = require('moment');
 const BILLBOARD_BASE_URL = 'http://www.billboard.com';
 const BILLBOARD_CHARTS_URL = `${BILLBOARD_BASE_URL}/charts/`;
 const BILLBOARD_IMAGE_URL = 'https://charts-static.billboard.com';
-
+const BILLBOARD_ASSET_URL = 'https://assets.billboard.com';
 /**
  * Gets information for specified chart and date
  *
@@ -74,13 +74,12 @@ function getChart(name, date, cb) {
       url: `${BILLBOARD_CHARTS_URL}${chartName}/${nextWeek}`,
     };
 
-    for (let i = 0; i < elements.length; i += 1) {
-      const coverPath = getCoverImagePath(elements[i]);
+    for (let i = 0; i < elements.length; i += 1) {      
       chart.songs.push({
         rank: elements[i].rank,
         title: elements[i].title,
         artist: elements[i].artist_name,
-        cover: coverPath ? `${BILLBOARD_IMAGE_URL}${coverPath}` : null,
+        cover: getCoverImageURL(elements[i]),
         position: {
           positionLastWeek: parseInt(elements[i].history.last_week, 10),
           peakPosition: parseInt(elements[i].history.peak_rank, 10),
@@ -104,13 +103,12 @@ function getChart(name, date, cb) {
  * 
  * @param {object} element - an element parsed from the chart-data
  */
-function getCoverImagePath(element) {
+function getCoverImageURL(element) {
   let image;
 
   if (element.title_images.sizes) {
     //try to get original size
     image = element.title_images.sizes.original;  
-  
     if (!image && element) {
         // get any size available
         const size = Object.keys(element.title_images.sizes)[0];
@@ -119,11 +117,24 @@ function getCoverImagePath(element) {
   }
 
   if(!image) {
-    // still can't find image (get default)
-    image = element.title_images.original;
+    // still can't find image,get default (usually a placeholder image asset)
+    image = element.title_images.original;    
   }
 
-  return image ? image.Name : null;
+  if(image) {
+    let imgPath = image.Name;
+
+    // this image asset path is not correct for some reason
+    if(imgPath === '/assets/1551380838/images/charts/bb-placeholder-new.jpg') {
+      imgPath = imgPath.replace('1551380838', '1570131897'); // got this updated path from live site
+    }
+    if(imgPath.startsWith('/assets')) {
+      return `${BILLBOARD_ASSET_URL}${imgPath}`;
+    }
+    return `${BILLBOARD_IMAGE_URL}${imgPath}`;
+  }
+    
+  return null;
 }
 
 /**
@@ -180,3 +191,9 @@ module.exports = {
   getChart,
   listCharts,
 };
+
+
+
+getChart('billboard-200', '2019-10-01', (err, resp) => {
+  // console.log(JSON.stringify(resp))
+});

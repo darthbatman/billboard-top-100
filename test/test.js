@@ -21,7 +21,7 @@ describe('getChart()', () => {
           rank: 1,
           title: 'Closer',
           artist: 'The Chainsmokers Featuring Halsey',
-          cover: 'http://www.billboard.com/img/2016/08/the-chainsmokers-9iv.jpg',
+          cover: 'https://charts-static.billboard.com/img/2016/08/the-chainsmokers-9iv.jpg',
           position: { positionLastWeek: 1, peakPosition: 1, weeksOnChart: 14 },
         }, 'first song is correct');
 
@@ -30,7 +30,7 @@ describe('getChart()', () => {
           title: 'Tiimmy Turner',
           artist: 'Desiigner',
           cover:
-           'http://www.billboard.com/img/2016/08/desiigner-l9j.jpg',
+           'https://charts-static.billboard.com/img/2016/08/desiigner-l9j.jpg',
           position: { positionLastWeek: 37, peakPosition: 34, weeksOnChart: 15 },
         }, 'arbitrary (38th) song is correct');
 
@@ -38,7 +38,7 @@ describe('getChart()', () => {
           rank: 100,
           title: 'Cool Girl',
           artist: 'Tove Lo',
-          cover: 'http://www.billboard.com/img/2016/08/tove-lo-vxl.jpg',
+          cover: 'https://charts-static.billboard.com/img/2016/08/tove-lo-vxl.jpg',
           position: { positionLastWeek: NaN, peakPosition: 84, weeksOnChart: 5 },
         }, 'last song is correct');
 
@@ -82,6 +82,39 @@ describe('getChart()', () => {
         assert(lastSong.position, 'last song has non-null and defined position');
         assert(lastSong.position.peakPosition, 'last song has peak position');
         assert(lastSong.position.weeksOnChart, 'last song has weeks on chart');
+
+        done();
+      });
+    }).timeout(5000);
+  });
+
+  describe('get a billboard-200 chart for 2019-10-01', () => {
+    it('should callback with the billboard-200 chart for this week', (done) => {
+      getChart('billboard-200', '2019-10-01', (err, chart) => {
+        if (err) done(err);
+
+        assert.lengthOf(chart.songs, 200, 'chart has 200 songs');
+
+        // test with missing image (should create a fixture for these tests)
+        assert.deepEqual(chart.songs[11], {
+          rank: 12,
+          title: 'Quality Control: Control The Streets, Volume 2',
+          artist: 'Various Artists',
+          cover:
+           'https://charts-static.billboard.com/assets/1551380838/images/charts/bb-placeholder-new.jpg',
+          position: { positionLastWeek: 13, peakPosition: 3, weeksOnChart: 6 },
+        }, 'no images sizes song is correct');
+
+
+        // testing alternate version of getting cover art
+        assert.deepEqual(chart.songs[59], {
+          rank: 60,
+          title: 'Chronicle The 20 Greatest Hits',
+          artist: 'Creedence Clearwater Revival Featuring John Fogerty',
+          cover:
+           'https://charts-static.billboard.com/img/1993/01/creedence-clearwater-revival-4xu-chronicle-the-20-greatest-hits-ttg-87x87.jpg',
+          position: { positionLastWeek: 61, peakPosition: 22, weeksOnChart: 438 },
+        }, 'alternate image size song is correct');
 
         done();
       });

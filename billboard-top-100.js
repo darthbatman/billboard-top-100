@@ -6,6 +6,47 @@ const BILLBOARD_BASE_URL = 'http://www.billboard.com';
 const BILLBOARD_CHARTS_URL = `${BILLBOARD_BASE_URL}/charts/`;
 const BILLBOARD_IMAGE_URL = 'https://charts-static.billboard.com';
 const BILLBOARD_ASSET_URL = 'https://assets.billboard.com';
+
+
+/**
+ * Try to find a cover image from the element
+ *
+ * @param {object} element - an element parsed from the chart-data
+ */
+function getCoverImageURL(element) {
+  let image;
+
+  if (element.title_images.sizes) {
+    // try to get original size
+    image = element.title_images.sizes.original;
+    if (!image && element) {
+      // get any size available
+      const size = Object.keys(element.title_images.sizes)[0];
+      image = element.title_images.sizes[size];
+    }
+  }
+
+  if (!image) {
+    // still can't find image,get default (usually a placeholder image asset)
+    image = element.title_images.original;
+  }
+
+  if (image) {
+    let imgPath = image.Name;
+
+    // this image asset path is not correct for some reason
+    if (imgPath === '/assets/1551380838/images/charts/bb-placeholder-new.jpg') {
+      imgPath = imgPath.replace('1551380838', '1570131897'); // got this updated path from live site
+    }
+    if (imgPath.startsWith('/assets')) {
+      return `${BILLBOARD_ASSET_URL}${imgPath}`;
+    }
+    return `${BILLBOARD_IMAGE_URL}${imgPath}`;
+  }
+
+  return null;
+}
+
 /**
  * Gets information for specified chart and date
  *
@@ -44,6 +85,7 @@ function getChart(name, date, cb) {
    * @property {string} artist - The song's artist
    */
 
+
   /**
    * Array of songs
    */
@@ -56,7 +98,7 @@ function getChart(name, date, cb) {
       return;
     }
     const $ = cheerio.load(html);
-    elements = JSON.parse($('#charts').attr('data-charts'));
+    const elements = JSON.parse($('#charts').attr('data-charts'));
 
     const d = moment(new Date($('.date-selector__button').text().trim()));
     chart.week = d.format('YYYY-MM-DD');
@@ -74,7 +116,7 @@ function getChart(name, date, cb) {
       url: `${BILLBOARD_CHARTS_URL}${chartName}/${nextWeek}`,
     };
 
-    for (let i = 0; i < elements.length; i += 1) {      
+    for (let i = 0; i < elements.length; i += 1) {
       chart.songs.push({
         rank: elements[i].rank,
         title: elements[i].title,
@@ -97,45 +139,6 @@ function getChart(name, date, cb) {
   });
 }
 
-
-/**
- * Try to find a cover image from the element
- * 
- * @param {object} element - an element parsed from the chart-data
- */
-function getCoverImageURL(element) {
-  let image;
-
-  if (element.title_images.sizes) {
-    //try to get original size
-    image = element.title_images.sizes.original;  
-    if (!image && element) {
-        // get any size available
-        const size = Object.keys(element.title_images.sizes)[0];
-        image = element.title_images.sizes[size];
-    }
-  }
-
-  if(!image) {
-    // still can't find image,get default (usually a placeholder image asset)
-    image = element.title_images.original;    
-  }
-
-  if(image) {
-    let imgPath = image.Name;
-
-    // this image asset path is not correct for some reason
-    if(imgPath === '/assets/1551380838/images/charts/bb-placeholder-new.jpg') {
-      imgPath = imgPath.replace('1551380838', '1570131897'); // got this updated path from live site
-    }
-    if(imgPath.startsWith('/assets')) {
-      return `${BILLBOARD_ASSET_URL}${imgPath}`;
-    }
-    return `${BILLBOARD_IMAGE_URL}${imgPath}`;
-  }
-    
-  return null;
-}
 
 /**
  * Gets all charts available via Billboard
@@ -191,9 +194,3 @@ module.exports = {
   getChart,
   listCharts,
 };
-
-
-
-getChart('billboard-200', '2019-10-01', (err, resp) => {
-  // console.log(JSON.stringify(resp))
-});

@@ -92,21 +92,17 @@ function getCoverFromChartItem(chartItem, $) {
       return `${BILLBOARD_IMAGE_URL}${imgPath}`;
     }
   } catch (err) {
-    try {
-      image = $('.chart-element__image', chartItem);
-      if (image && image.length) {
-        image = image.css('background-image')
-          .replace('url(', '');
-        image = image.substr(0, image.length - 2);
-      } else {
-        image = $('.chart-list-item__image', chartItem)[0].attribs;
-        image = image['data-src'] || image.src;
-      }
-      return image.trim();
-    } catch (e) {
-      return null;
+    image = $('.chart-element__image', chartItem);
+    if (image && image.length) {
+      image = image.css('background-image')
+        .replace('url(', '');
+      image = image.substr(0, image.length - 2);
+    } else {
+      image = $('.chart-list-item__image', chartItem)[0].attribs;
+      image = image['data-src'] || image.src;
     }
   }
+  return image.trim();
 }
 
 /**

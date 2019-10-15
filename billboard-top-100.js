@@ -7,44 +7,165 @@ const BILLBOARD_CHARTS_URL = `${BILLBOARD_BASE_URL}/charts/`;
 const BILLBOARD_IMAGE_URL = 'https://charts-static.billboard.com';
 const BILLBOARD_ASSET_URL = 'https://assets.billboard.com';
 
+/**
+ * Gets the title from the specified chart item
+ *
+ * @param {HTMLElement} chartItem - The chart item
+ * @return {string} The title
+ *
+ * @example
+ *
+ *     getTitleFromChartItem(<div class="chart-list-item">...</div>) // 'The Real Slim Shady'
+ */
+function getTitleFromChartItem(chartItem, $) {
+  let title;
+  try {
+    title = $('.chart-element__information__song', chartItem).text()
+      || $('.chart-list-item__title-text', chartItem).text();
+  } catch (e) {
+    title = '';
+  }
+  return title.trim();
+}
 
 /**
- * Try to find a cover image from the element
+ * Gets the artist from the specified chart item
  *
- * @param {object} element - an element parsed from the chart-data
+ * @param {HTMLElement} chartItem - The chart item
+ * @return {string} The artist
+ *
+ * @example
+ *
+ *     getArtistFromChartItem(<div class="chart-list-item">...</div>) // 'Eminem'
  */
-function getCoverImageURL(element) {
+function getArtistFromChartItem(chartItem, $) {
+  let artist;
+  try {
+    artist = $('.chart-element__information__artist', chartItem).text()
+      || $('.chart-list-item__artist', chartItem).text();
+  } catch (e) {
+    artist = '';
+  }
+  return artist.trim();
+}
+
+/**
+ * Gets the cover from the specified chart item
+ *
+ * @param {HTMLElement} chartItem - The chart item
+ * @param {number} rank - The rank of the chart item
+ * @return {string} The cover url string
+ *
+ * @example
+ *
+ *     getCoverFromChartItem(<div class="chart-list-item">...</div>) // 'https://charts-static.billboard.com/img/2016/12/locash-53x53.jpg'
+ */
+function getCoverFromChartItem(chartItem, $) {
   let image;
 
-  if (element.title_images.sizes) {
-    // try to get original size
-    image = element.title_images.sizes.original;
-    if (!image && element) {
-      // get any size available
-      const size = Object.keys(element.title_images.sizes)[0];
-      image = element.title_images.sizes[size];
+  try {
+    if (chartItem.title_images.sizes) {
+      // try to get original size
+      image = chartItem.title_images.sizes.original;
+      if (!image && chartItem) {
+        // get any size available
+        const size = Object.keys(chartItem.title_images.sizes)[0];
+        image = chartItem.title_images.sizes[size];
+      }
+    }
+
+    if (!image) {
+      // still can't find image, get default (usually a placeholder image asset)
+      image = chartItem.title_images.original;
+    }
+
+    if (image) {
+      let imgPath = image.Name;
+
+      // this image asset path is not correct for some reason
+      if (imgPath === '/assets/1551380838/images/charts/bb-placeholder-new.jpg') {
+        imgPath = imgPath.replace('1551380838', '1570131897'); // got this updated path from live site
+      }
+      if (imgPath.startsWith('/assets')) {
+        return `${BILLBOARD_ASSET_URL}${imgPath}`;
+      }
+      return `${BILLBOARD_IMAGE_URL}${imgPath}`;
+    }
+  } catch (err) {
+    image = $('.chart-element__image', chartItem);
+    if (image && image.length) {
+      image = image.css('background-image')
+        .replace('url(', '');
+      image = image.substr(0, image.length - 2);
+    } else {
+      image = $('.chart-list-item__image', chartItem)[0].attribs;
+      image = image['data-src'] || image.src;
     }
   }
+  return image.trim();
+}
 
-  if (!image) {
-    // still can't find image,get default (usually a placeholder image asset)
-    image = element.title_images.original;
+/**
+ * Gets the position last week from the specified chart item
+ *
+ * @param {HTMLElement} chartItem - The chart item
+ * @return {number} The position last week
+ *
+ * @example
+ *
+ *     getPositionLastWeekFromChartItem(<div class="chart-list-item">...</div>) // 4
+ */
+function getPositionLastWeekFromChartItem(chartItem, $) {
+  let positionLastWeek;
+  try {
+    positionLastWeek = $('.chart-element__meta.text--last', chartItem).text()
+      || $('.chart-list-item__ministats-cell', chartItem)[0].children[0].data;
+  } catch (e) {
+    positionLastWeek = '';
   }
+  return parseInt(positionLastWeek, 10);
+}
 
-  if (image) {
-    let imgPath = image.Name;
-
-    // this image asset path is not correct for some reason
-    if (imgPath === '/assets/1551380838/images/charts/bb-placeholder-new.jpg') {
-      imgPath = imgPath.replace('1551380838', '1570131897'); // got this updated path from live site
-    }
-    if (imgPath.startsWith('/assets')) {
-      return `${BILLBOARD_ASSET_URL}${imgPath}`;
-    }
-    return `${BILLBOARD_IMAGE_URL}${imgPath}`;
+/**
+ * Gets the peak position from the specified chart item
+ *
+ * @param {HTMLElement} chartItem - The chart item
+ * @return {number} The peak position
+ *
+ * @example
+ *
+ *     getPeakPositionFromChartItem(<div class="chart-list-item">...</div>) // 4
+ */
+function getPeakPositionFromChartItem(chartItem, $) {
+  let peakPosition;
+  try {
+    peakPosition = $('.chart-element__meta.text--peak', chartItem).text()
+      || $('.chart-list-item__ministats-cell', chartItem)[1].children[0].data;
+  } catch (e) {
+    peakPosition = '';
   }
+  return parseInt(peakPosition, 10);
+}
 
-  return null;
+/**
+ * Gets the weeks on chart last week from the specified chart item
+ *
+ * @param {HTMLElement} chartItem - The chart item
+ * @return {number} The weeks on chart
+ *
+ * @example
+ *
+ *     getWeeksOnChartFromChartItem(<div class="chart-list-item">...</div>) // 4
+ */
+function getWeeksOnChartFromChartItem(chartItem, $) {
+  let weeksOnChart;
+  try {
+    weeksOnChart = $('.chart-element__meta.text--week', chartItem).text()
+      || $('.chart-list-item__ministats-cell', chartItem)[2].children[0].data;
+  } catch (e) {
+    weeksOnChart = '1';
+  }
+  return parseInt(weeksOnChart, 10);
 }
 
 /**
@@ -85,7 +206,6 @@ function getChart(name, date, cb) {
    * @property {string} artist - The song's artist
    */
 
-
   /**
    * Array of songs
    */
@@ -97,13 +217,13 @@ function getChart(name, date, cb) {
       callback(error, null);
       return;
     }
-    const $ = cheerio.load(html);
-    const elements = JSON.parse($('#charts').attr('data-charts'));
 
+    const $ = cheerio.load(html);
+
+    // get chart week
     const d = moment(new Date($('.date-selector__button').text().trim()));
     chart.week = d.format('YYYY-MM-DD');
-
-    // get previous and next weeks
+    // get previous and next charts
     const prevWeek = d.subtract(7, 'days').format('YYYY-MM-DD');
     chart.previousWeek = {
       date: prevWeek,
@@ -116,16 +236,33 @@ function getChart(name, date, cb) {
       url: `${BILLBOARD_CHARTS_URL}${chartName}/${nextWeek}`,
     };
 
-    for (let i = 0; i < elements.length; i += 1) {
+    // push remaining ranked songs into chart.songs array
+    let chartListItems;
+    try {
+      chartListItems = JSON.parse($('#charts').attr('data-charts'));
+    } catch (err) {
+      chartListItems = $('.chart-list__element');
+    }
+    if (!(chartListItems && chartListItems.length)) {
+      chartListItems = $('.chart-list-item__first-row');
+    }
+
+    for (let i = 0; i < chartListItems.length; i += 1) {
       chart.songs.push({
-        rank: elements[i].rank,
-        title: elements[i].title,
-        artist: elements[i].artist_name,
-        cover: getCoverImageURL(elements[i]),
+        rank: chartListItems[i].rank || (i + 1),
+        title: chartListItems[i].title || getTitleFromChartItem(chartListItems[i], $),
+        artist: chartListItems[i].artist_name || getArtistFromChartItem(chartListItems[i], $),
+        cover: getCoverFromChartItem(chartListItems[i], $),
         position: {
-          positionLastWeek: parseInt(elements[i].history.last_week, 10),
-          peakPosition: parseInt(elements[i].history.peak_rank, 10),
-          weeksOnChart: parseInt(elements[i].history.weeks_on_chart, 10),
+          positionLastWeek: (chartListItems[i].history
+            && parseInt(chartListItems[i].history.last_week, 10))
+            || getPositionLastWeekFromChartItem(chartListItems[i], $),
+          peakPosition: (chartListItems[i].history
+            && parseInt(chartListItems[i].history.peak_rank, 10))
+            || getPeakPositionFromChartItem(chartListItems[i], $),
+          weeksOnChart: (chartListItems[i].history
+            && parseInt(chartListItems[i].history.weeks_on_chart, 10))
+            || getWeeksOnChartFromChartItem(chartListItems[i], $),
         },
       });
     }
@@ -139,12 +276,9 @@ function getChart(name, date, cb) {
   });
 }
 
-
 /**
  * Gets all charts available via Billboard
  *
- * @param {string} chart - The specified chart
- * @param {string} date - Date represented as string in format 'YYYY-MM-DD'
  * @param {function} cb - The specified callback method
  *
  * @example

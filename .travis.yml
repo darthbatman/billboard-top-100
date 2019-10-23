@@ -12,3 +12,6 @@ deploy:
   on:
     tags: true
     all_branches: true
+notifications:
+  email:
+    - masandrishi@gmail.com

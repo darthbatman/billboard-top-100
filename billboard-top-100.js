@@ -80,26 +80,30 @@ function getCoverFromChartItem(chartItem, $) {
     }
 
     if (image) {
-      let imgPath = image.Name;
+      const imgPath = image.Name;
 
       // this image asset path is not correct for some reason
       if (imgPath === '/assets/1551380838/images/charts/bb-placeholder-new.jpg') {
-        imgPath = imgPath.replace('1551380838', '1570131897'); // got this updated path from live site
+        return 'https://www.billboard.com/assets/1582845518/images/charts/bb-placeholder-new.jpg';
       }
       if (imgPath.startsWith('/assets')) {
         return `${BILLBOARD_ASSET_URL}${imgPath}`;
       }
       return `${BILLBOARD_IMAGE_URL}${imgPath}`;
     }
-  } catch (err) {
-    image = $('.chart-element__image', chartItem);
-    if (image && image.length) {
-      image = image.css('background-image')
-        .replace('url(', '');
-      image = image.substr(0, image.length - 2);
-    } else {
-      image = $('.chart-list-item__image', chartItem)[0].attribs;
-      image = image['data-src'] || image.src;
+  } catch (err1) {
+    try {
+      image = $('.chart-element__image', chartItem);
+      if (image && image.length) {
+        image = image.css('background-image')
+          .replace('url(', '');
+        image = image.substr(0, image.length - 2);
+      } else {
+        image = $('.chart-list-item__image', chartItem)[0].attribs;
+        image = image['data-src'] || image.src;
+      }
+    } catch (err2) {
+      image = 'https://www.billboard.com/assets/1582845518/images/charts/bb-placeholder-new.jpg';
     }
   }
   return image.trim();

@@ -151,7 +151,7 @@ describe('getChart()', () => {
         assert.deepEqual(chart.songs[59], {
           rank: 60,
           title: 'Chronicle The 20 Greatest Hits',
-          artist: 'Creedence Clearwater Revival Featuring John Fogerty',
+          artist: 'Creedence Clearwater Revival',
           cover:
            'https://charts-static.billboard.com/img/1993/01/creedence-clearwater-revival-6ft-chronicle-the-20-greatest-hits-ttg.jpg',
           position: { positionLastWeek: 61, peakPosition: 22, weeksOnChart: 438 },

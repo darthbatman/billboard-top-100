@@ -44,7 +44,7 @@ describe('getChart()', () => {
 
         done();
       });
-    }).timeout(5000);
+    }).timeout(10000);
   });
 
   describe('get a current chart (hot-100)', () => {
@@ -85,7 +85,7 @@ describe('getChart()', () => {
 
         done();
       });
-    }).timeout(5000);
+    }).timeout(10000);
   });
 
   describe('get a current chart (latin-songs)', () => {
@@ -126,7 +126,7 @@ describe('getChart()', () => {
 
         done();
       });
-    }).timeout(5000);
+    }).timeout(10000);
   });
 
   describe('get a billboard-200 chart for 2019-10-01', () => {
@@ -159,7 +159,7 @@ describe('getChart()', () => {
 
         done();
       });
-    }).timeout(5000);
+    }).timeout(10000);
   });
 });
 
@@ -181,6 +181,6 @@ describe('listCharts()', () => {
 
         done();
       });
-    }).timeout(5000);
+    }).timeout(10000);
   });
 });

@@ -6,6 +6,7 @@ const BILLBOARD_BASE_URL = 'http://www.billboard.com';
 const BILLBOARD_CHARTS_URL = `${BILLBOARD_BASE_URL}/charts/`;
 const BILLBOARD_IMAGE_URL = 'https://charts-static.billboard.com';
 const BILLBOARD_ASSET_URL = 'https://assets.billboard.com';
+const BILLBOARD_BB_PLACEHOLDER = 'https://www.billboard.com/wp-content/uploads/styles/square_thumbnail/public/media/Billboard%20Brand%20Assets/bb_placeholder-square.jpg'
 
 /**
  * Gets the title from the specified chart item
@@ -20,11 +21,11 @@ const BILLBOARD_ASSET_URL = 'https://assets.billboard.com';
 function getTitleFromChartItem(chartItem, $) {
   let title;
   try {
-    title = $('.chart-element__information__song', chartItem).text()
-      || $('.chart-list-item__title-text', chartItem).text();
+    title = $('.c-title', chartItem).text().split('\n')[1]
   } catch (e) {
     title = '';
   }
+  // console.log('title: ', title)
   return title.trim();
 }
 
@@ -41,11 +42,11 @@ function getTitleFromChartItem(chartItem, $) {
 function getArtistFromChartItem(chartItem, $) {
   let artist;
   try {
-    artist = $('.chart-element__information__artist', chartItem).text()
-      || $('.chart-list-item__artist', chartItem).text();
+    artist = $('.c-label.a-no-trucate', chartItem).text()
   } catch (e) {
     artist = '';
   }
+  // console.log('artist', artist)
   return artist.trim();
 }
 
@@ -84,7 +85,7 @@ function getCoverFromChartItem(chartItem, $) {
 
       // this image asset path is not correct for some reason
       if (imgPath === '/assets/1551380838/images/charts/bb-placeholder-new.jpg') {
-        return 'https://www.billboard.com/assets/1582845518/images/charts/bb-placeholder-new.jpg';
+        return BILLBOARD_BB_PLACEHOLDER;
       }
       if (imgPath.startsWith('/assets')) {
         return `${BILLBOARD_ASSET_URL}${imgPath}`;
@@ -93,19 +94,23 @@ function getCoverFromChartItem(chartItem, $) {
     }
   } catch (err1) {
     try {
-      image = $('.chart-element__image', chartItem);
-      if (image && image.length) {
+      image = $('.c-lazy-image', chartItem);
+      // console.log('image first: ', image)
+      
+      if (image) {
         image = image.css('background-image')
           .replace('url(', '');
+          // console.log('image now: ', image)
         image = image.substr(0, image.length - 2);
       } else {
         image = $('.chart-list-item__image', chartItem)[0].attribs;
         image = image['data-src'] || image.src;
       }
     } catch (err2) {
-      image = 'https://www.billboard.com/assets/1582845518/images/charts/bb-placeholder-new.jpg';
+      image = BILLBOARD_BB_PLACEHOLDER;
     }
   }
+  // console.log('image: ', image)
   return image.trim();
 }
 
@@ -243,7 +248,8 @@ function getChart(name, date, cb) {
     // push remaining ranked songs into chart.songs array
     let chartListItems;
     try {
-      chartListItems = JSON.parse($('#charts').attr('data-charts'));
+      chartListItems = $('.o-chart-results-list-row-container');
+      // console.log(chartListItems)
     } catch (err) {
       chartListItems = $('.chart-list__element');
     }
@@ -252,6 +258,9 @@ function getChart(name, date, cb) {
     }
 
     for (let i = 0; i < chartListItems.length; i += 1) {
+      // getTitleFromChartItem(chartListItems[i], $)
+      // getArtistFromChartItem(chartListItems[i], $)
+      // getCoverFromChartItem(chartListItems[i], $)
       chart.songs.push({
         rank: chartListItems[i].rank || (i + 1),
         title: chartListItems[i].title || getTitleFromChartItem(chartListItems[i], $),
@@ -269,6 +278,7 @@ function getChart(name, date, cb) {
             || getWeeksOnChartFromChartItem(chartListItems[i], $),
         },
       });
+      // console.log(chart.songs[i])
     }
 
     // callback with chart if chart.songs array was populated

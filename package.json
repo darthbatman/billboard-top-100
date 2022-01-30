@@ -1,6 +1,6 @@
 {
   "name": "bb-top-100",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Gets the top songs, albums, and artists from Billboard's charts",
   "main": "billboard-top-100.js",
   "directories": {

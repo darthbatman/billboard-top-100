@@ -225,7 +225,7 @@ function getChart(name, date, cb) {
     const $ = cheerio.load(html);
 
     // get chart week
-    const d = moment(new Date($('.date-selector__button').text().trim()));
+    const d = moment(new Date($('.chart-results')[0].children[1].children[1].children[3].children[0].data.trim().slice('Week of '.length)));
     chart.week = d.format('YYYY-MM-DD');
     // get previous and next charts
     const prevWeek = d.subtract(7, 'days').format('YYYY-MM-DD');
@@ -251,12 +251,12 @@ function getChart(name, date, cb) {
     //   chartListItems = $('.chart-list-item__first-row');
     // }
 
-    for (let i = 1; i < chartListItems.length; i += 1) {
+    for (let i = 0; i < chartListItems.length; i += 1) {
       chart.songs.push({
         rank: parseInt(chartListItems[i].children[1].children[1].children[1].children[0].data.trim()),
         title: chartListItems[i].children[1].children[7].children[1].children[1].children[1].children[0].data.trim(),
         artist: chartListItems[i].children[1].children[7].children[1].children[1].children[3].children[0].data.trim(),
-        cover: chartListItems[i].children[1].children[3].children[1].children[1].children[1].attribs.src,
+        cover: chartListItems[i].children[1].children[3].children[1].children[1].children[1].attribs['data-lazy-src'],
         position: {
           positionLastWeek: parseInt(chartListItems[i].children[1].children[7].children[1].children[7].children[1].children[0].data.trim()),
           peakPosition: parseInt(chartListItems[i].children[1].children[7].children[1].children[9].children[1].children[0].data.trim()),

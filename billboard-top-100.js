@@ -241,34 +241,45 @@ function getChart(name, date, cb) {
     };
 
     // push remaining ranked songs into chart.songs array
-    let chartListItems;
-    try {
-      chartListItems = JSON.parse($('#charts').attr('data-charts'));
-    } catch (err) {
-      chartListItems = $('.chart-list__element');
-    }
-    if (!(chartListItems && chartListItems.length)) {
-      chartListItems = $('.chart-list-item__first-row');
-    }
+    const chartListItems = $('.o-chart-results-list-row-container');
+    // try {
+    //   chartListItems = JSON.parse($('#charts').attr('data-charts'));
+    // } catch (err) {
+    //   chartListItems = $('.chart-list__element');
+    // }
+    // if (!(chartListItems && chartListItems.length)) {
+    //   chartListItems = $('.chart-list-item__first-row');
+    // }
 
-    for (let i = 0; i < chartListItems.length; i += 1) {
+    for (let i = 1; i < chartListItems.length; i += 1) {
       chart.songs.push({
-        rank: chartListItems[i].rank || (i + 1),
-        title: chartListItems[i].title || getTitleFromChartItem(chartListItems[i], $),
-        artist: chartListItems[i].artist_name || getArtistFromChartItem(chartListItems[i], $),
-        cover: getCoverFromChartItem(chartListItems[i], $),
+        rank: parseInt(chartListItems[i].children[1].children[1].children[1].children[0].data.trim()),
+        title: chartListItems[i].children[1].children[7].children[1].children[1].children[1].children[0].data.trim(),
+        artist: chartListItems[i].children[1].children[7].children[1].children[1].children[3].children[0].data.trim(),
+        cover: chartListItems[i].children[1].children[3].children[1].children[1].children[1].attribs.src,
         position: {
-          positionLastWeek: (chartListItems[i].history
-            && parseInt(chartListItems[i].history.last_week, 10))
-            || getPositionLastWeekFromChartItem(chartListItems[i], $),
-          peakPosition: (chartListItems[i].history
-            && parseInt(chartListItems[i].history.peak_rank, 10))
-            || getPeakPositionFromChartItem(chartListItems[i], $),
-          weeksOnChart: (chartListItems[i].history
-            && parseInt(chartListItems[i].history.weeks_on_chart, 10))
-            || getWeeksOnChartFromChartItem(chartListItems[i], $),
+          positionLastWeek: parseInt(chartListItems[i].children[1].children[7].children[1].children[7].children[1].children[0].data.trim()),
+          peakPosition: parseInt(chartListItems[i].children[1].children[7].children[1].children[9].children[1].children[0].data.trim()),
+          weeksOnChart: parseInt(chartListItems[i].children[1].children[7].children[1].children[11].children[1].children[0].data.trim()),
         },
       });
+      // chart.songs.push({
+      //   rank: chartListItems[i].rank || (i + 1),
+      //   title: chartListItems[i].title || getTitleFromChartItem(chartListItems[i], $),
+      //   artist: chartListItems[i].artist_name || getArtistFromChartItem(chartListItems[i], $),
+      //   cover: getCoverFromChartItem(chartListItems[i], $),
+      //   position: {
+      //     positionLastWeek: (chartListItems[i].history
+      //       && parseInt(chartListItems[i].history.last_week, 10))
+      //       || getPositionLastWeekFromChartItem(chartListItems[i], $),
+      //     peakPosition: (chartListItems[i].history
+      //       && parseInt(chartListItems[i].history.peak_rank, 10))
+      //       || getPeakPositionFromChartItem(chartListItems[i], $),
+      //     weeksOnChart: (chartListItems[i].history
+      //       && parseInt(chartListItems[i].history.weeks_on_chart, 10))
+      //       || getWeeksOnChartFromChartItem(chartListItems[i], $),
+      //   },
+      // });
     }
 
     // callback with chart if chart.songs array was populated

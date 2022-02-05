@@ -4,6 +4,8 @@ const moment = require('moment');
 
 const BILLBOARD_BASE_URL = 'http://www.billboard.com';
 const BILLBOARD_CHARTS_URL = `${BILLBOARD_BASE_URL}/charts/`;
+const BILLBOARD_CHART_CATEGORY_URL_PREFIX = `${BILLBOARD_BASE_URL}/pmc-ajax/charts-fetch-all-chart/selected_category-`;
+const BILLBOARD_CHART_CATEGORY_URL_SUFFIX = '/chart_type-weekly/';
 
 function getChart(name, date, cb) {
   let chartName = name;
@@ -52,17 +54,21 @@ function getChart(name, date, cb) {
       url: `${BILLBOARD_CHARTS_URL}${chartName}/${nextWeek}`,
     };
 
-    const chartListItems = $('.o-chart-results-list-row-container');
-    for (let i = 0; i < chartListItems.length; i += 1) {
+    const chartItems = $('.o-chart-results-list-row-container');
+    for (let i = 0; i < chartItems.length; i += 1) {
+      const infoContainer = chartItems[i].children[1];
+      const titleAndArtistContainer = infoContainer.children[7].children[1].children[1];
+      const posInfo = infoContainer.children[7].children[1];
+
       chart.songs.push({
-        rank: parseInt(chartListItems[i].children[1].children[1].children[1].children[0].data.trim(), 10),
-        title: chartListItems[i].children[1].children[7].children[1].children[1].children[1].children[0].data.trim(),
-        artist: chartListItems[i].children[1].children[7].children[1].children[1].children[3].children[0].data.trim(),
-        cover: chartListItems[i].children[1].children[3].children[1].children[1].children[1].attribs['data-lazy-src'],
+        rank: parseInt(infoContainer.children[1].children[1].children[0].data.trim(), 10),
+        title: titleAndArtistContainer.children[1].children[0].data.trim(),
+        artist: titleAndArtistContainer.children[3].children[0].data.trim(),
+        cover: infoContainer.children[3].children[1].children[1].children[1].attribs['data-lazy-src'],
         position: {
-          positionLastWeek: parseInt(chartListItems[i].children[1].children[7].children[1].children[7].children[1].children[0].data.trim(), 10),
-          peakPosition: parseInt(chartListItems[i].children[1].children[7].children[1].children[9].children[1].children[0].data.trim(), 10),
-          weeksOnChart: parseInt(chartListItems[i].children[1].children[7].children[1].children[11].children[1].children[0].data.trim(), 10),
+          positionLastWeek: parseInt(posInfo.children[7].children[1].children[0].data.trim(), 10),
+          peakPosition: parseInt(posInfo.children[9].children[1].children[0].data.trim(), 10),
+          weeksOnChart: parseInt(posInfo.children[11].children[1].children[0].data.trim(), 10),
         },
       });
     }
@@ -75,30 +81,29 @@ function getChart(name, date, cb) {
   });
 }
 
-const getChartsFromCategory = async (categoryURLs, cb) => {
+const getChartsFromCategories = async (categoryURLs, cb) => {
   const charts = [];
-  let a = 0;
-  for (let j = 0; j < categoryURLs.length; j += 1) {
-    const categoryURL = categoryURLs[j];
+
+  const promises = categoryURLs.map(categoryURL => new Promise(((res) => {
     request(categoryURL, (error, response, html) => {
       if (error) {
-        a += 1;
-      } else {
-        const $ = cheerio.load(JSON.parse(html).html);
+        res();
+      }
+      const $ = cheerio.load(JSON.parse(html).html);
 
-        const chartLinks = $('a.lrv-u-flex.lrv-u-flex-direction-column');
-        for (let i = 0; i < chartLinks.length; i += 1) {
-          if (chartLinks[i].attribs.href.startsWith('/charts/')) {
-            charts.push({ name: chartLinks[i].children[1].children[0].data.trim(), url: `${BILLBOARD_BASE_URL}${chartLinks[i].attribs.href}` });
-          }
+      const chartLinks = $('a.lrv-u-flex.lrv-u-flex-direction-column');
+      for (let i = 0; i < chartLinks.length; i += 1) {
+        if (chartLinks[i].attribs.href.startsWith('/charts/')) {
+          charts.push({ name: chartLinks[i].children[1].children[0].data.trim(), url: `${BILLBOARD_BASE_URL}${chartLinks[i].attribs.href}` });
         }
-        a += 1;
       }
-      if (a === categoryURLs.length) {
-        cb(charts);
-      }
+      res();
     });
-  }
+  })));
+
+  Promise.all(promises).then(() => {
+    cb(charts);
+  });
 };
 
 function listCharts(cb) {
@@ -106,21 +111,25 @@ function listCharts(cb) {
     cb('Specified callback is not a function.', null);
     return;
   }
+
   request(BILLBOARD_CHARTS_URL, (error, response, html) => {
     if (error) {
       cb(error, null);
       return;
     }
+
     const $ = cheerio.load(html);
 
-    const chartCategories = $('.o-nav__list-item.lrv-u-color-grey-medium-dark');
-    const chartCategoryURLs = [];
-    for (let i = 0; i < chartCategories.length; i += 1) {
-      if (chartCategories[i].children[1].attribs.href === '#') {
-        chartCategoryURLs.push(`https://www.billboard.com/pmc-ajax/charts-fetch-all-chart/selected_category-${encodeURIComponent(chartCategories[i].children[1].attribs.rel)}/chart_type-weekly/`);
+    const categoryElements = $('.o-nav__list-item.lrv-u-color-grey-medium-dark');
+    const categoryURLs = [];
+    for (let i = 0; i < categoryElements.length; i += 1) {
+      if (categoryElements[i].children && categoryElements[i].children[1].attribs.href === '#') {
+        const categoryName = encodeURIComponent(categoryElements[i].children[1].attribs.rel);
+        categoryURLs.push(`${BILLBOARD_CHART_CATEGORY_URL_PREFIX}${categoryName}${BILLBOARD_CHART_CATEGORY_URL_SUFFIX}`);
       }
     }
-    getChartsFromCategory(chartCategoryURLs, (charts) => {
+
+    getChartsFromCategories(categoryURLs, (charts) => {
       if (charts.length > 0) {
         cb(null, charts);
       } else {

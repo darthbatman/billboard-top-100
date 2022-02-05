@@ -15,8 +15,9 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 16
-      - run: npm ci
+      - run: npm run lint
       - run: npm test
+      - run: npm run coverage
 
   publish-npm:
     needs: build
@@ -27,7 +28,8 @@ jobs:
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org/
-      - run: npm ci
-      - run: npm publish
+      - run: npm run lint
+      - run: npm test
+      - run: npm run coverage
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}

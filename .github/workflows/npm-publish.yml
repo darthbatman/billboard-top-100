@@ -1,4 +1,4 @@
-name: Publish package to NPM
+name: npm-publish
 
 on:
   push:
@@ -15,6 +15,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 16
+      - run: npm install
       - run: npm run lint
 
   test:
@@ -25,9 +26,10 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 16
+      - run: npm install    
       - run: npm test
 
-  publish-npm:
+  publish:
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -36,6 +38,7 @@ jobs:
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org/
+      - run: npm install
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}

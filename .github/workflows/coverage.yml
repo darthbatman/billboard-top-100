@@ -1,4 +1,4 @@
-name: lint
+name: coverage
 
 on:
   push:
@@ -19,4 +19,4 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm install
-    - run: npm coverage lint
+    - run: npm run coverage

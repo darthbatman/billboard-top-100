@@ -84,7 +84,7 @@ function getChart(name, date, cb) {
 const getChartsFromCategories = async (categoryURLs, cb) => {
   const charts = [];
 
-  const promises = categoryURLs.map(categoryURL => new Promise(((res) => {
+  const promises = categoryURLs.map((categoryURL) => new Promise(((res) => {
     request(categoryURL, (error, response, html) => {
       if (error) {
         res();

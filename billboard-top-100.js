@@ -4,190 +4,14 @@ const moment = require('moment');
 
 const BILLBOARD_BASE_URL = 'http://www.billboard.com';
 const BILLBOARD_CHARTS_URL = `${BILLBOARD_BASE_URL}/charts/`;
-const BILLBOARD_IMAGE_URL = 'https://charts-static.billboard.com';
-const BILLBOARD_ASSET_URL = 'https://assets.billboard.com';
+const BILLBOARD_CHART_CATEGORY_URL_PREFIX = `${BILLBOARD_BASE_URL}/pmc-ajax/charts-fetch-all-chart/selected_category-`;
+const BILLBOARD_CHART_CATEGORY_URL_SUFFIX = '/chart_type-weekly/';
 
-/**
- * Gets the title from the specified chart item
- *
- * @param {HTMLElement} chartItem - The chart item
- * @return {string} The title
- *
- * @example
- *
- *     getTitleFromChartItem(<div class="chart-list-item">...</div>) // 'The Real Slim Shady'
- */
-function getTitleFromChartItem(chartItem, $) {
-  let title;
-  try {
-    title = $('.chart-element__information__song', chartItem).text()
-      || $('.chart-list-item__title-text', chartItem).text();
-  } catch (e) {
-    title = '';
-  }
-  return title.trim();
-}
-
-/**
- * Gets the artist from the specified chart item
- *
- * @param {HTMLElement} chartItem - The chart item
- * @return {string} The artist
- *
- * @example
- *
- *     getArtistFromChartItem(<div class="chart-list-item">...</div>) // 'Eminem'
- */
-function getArtistFromChartItem(chartItem, $) {
-  let artist;
-  try {
-    artist = $('.chart-element__information__artist', chartItem).text()
-      || $('.chart-list-item__artist', chartItem).text();
-  } catch (e) {
-    artist = '';
-  }
-  return artist.trim();
-}
-
-/**
- * Gets the cover from the specified chart item
- *
- * @param {HTMLElement} chartItem - The chart item
- * @param {number} rank - The rank of the chart item
- * @return {string} The cover url string
- *
- * @example
- *
- *     getCoverFromChartItem(<div class="chart-list-item">...</div>) // 'https://charts-static.billboard.com/img/2016/12/locash-53x53.jpg'
- */
-function getCoverFromChartItem(chartItem, $) {
-  let image;
-
-  try {
-    if (chartItem.title_images.sizes) {
-      // try to get original size
-      image = chartItem.title_images.sizes.original;
-      if (!image && chartItem) {
-        // get any size available
-        const size = Object.keys(chartItem.title_images.sizes)[0];
-        image = chartItem.title_images.sizes[size];
-      }
-    }
-
-    if (!image) {
-      // still can't find image, get default (usually a placeholder image asset)
-      image = chartItem.title_images.original;
-    }
-
-    if (image) {
-      const imgPath = image.Name;
-
-      // this image asset path is not correct for some reason
-      if (imgPath === '/assets/1551380838/images/charts/bb-placeholder-new.jpg') {
-        return 'https://www.billboard.com/assets/1582845518/images/charts/bb-placeholder-new.jpg';
-      }
-      if (imgPath.startsWith('/assets')) {
-        return `${BILLBOARD_ASSET_URL}${imgPath}`;
-      }
-      return `${BILLBOARD_IMAGE_URL}${imgPath}`;
-    }
-  } catch (err1) {
-    try {
-      image = $('.chart-element__image', chartItem);
-      if (image && image.length) {
-        image = image.css('background-image')
-          .replace('url(', '');
-        image = image.substr(0, image.length - 2);
-      } else {
-        image = $('.chart-list-item__image', chartItem)[0].attribs;
-        image = image['data-src'] || image.src;
-      }
-    } catch (err2) {
-      image = 'https://www.billboard.com/assets/1582845518/images/charts/bb-placeholder-new.jpg';
-    }
-  }
-  return image.trim();
-}
-
-/**
- * Gets the position last week from the specified chart item
- *
- * @param {HTMLElement} chartItem - The chart item
- * @return {number} The position last week
- *
- * @example
- *
- *     getPositionLastWeekFromChartItem(<div class="chart-list-item">...</div>) // 4
- */
-function getPositionLastWeekFromChartItem(chartItem, $) {
-  let positionLastWeek;
-  try {
-    positionLastWeek = $('.chart-element__meta.text--last', chartItem).text()
-      || $('.chart-list-item__ministats-cell', chartItem)[0].children[0].data;
-  } catch (e) {
-    positionLastWeek = '';
-  }
-  return parseInt(positionLastWeek, 10);
-}
-
-/**
- * Gets the peak position from the specified chart item
- *
- * @param {HTMLElement} chartItem - The chart item
- * @return {number} The peak position
- *
- * @example
- *
- *     getPeakPositionFromChartItem(<div class="chart-list-item">...</div>) // 4
- */
-function getPeakPositionFromChartItem(chartItem, $) {
-  let peakPosition;
-  try {
-    peakPosition = $('.chart-element__meta.text--peak', chartItem).text()
-      || $('.chart-list-item__ministats-cell', chartItem)[1].children[0].data;
-  } catch (e) {
-    peakPosition = '';
-  }
-  return parseInt(peakPosition, 10);
-}
-
-/**
- * Gets the weeks on chart last week from the specified chart item
- *
- * @param {HTMLElement} chartItem - The chart item
- * @return {number} The weeks on chart
- *
- * @example
- *
- *     getWeeksOnChartFromChartItem(<div class="chart-list-item">...</div>) // 4
- */
-function getWeeksOnChartFromChartItem(chartItem, $) {
-  let weeksOnChart;
-  try {
-    weeksOnChart = $('.chart-element__meta.text--week', chartItem).text()
-      || $('.chart-list-item__ministats-cell', chartItem)[2].children[0].data;
-  } catch (e) {
-    weeksOnChart = '1';
-  }
-  return parseInt(weeksOnChart, 10);
-}
-
-/**
- * Gets information for specified chart and date
- *
- * @param {string} chartName - The specified chart
- * @param {string} date - Date represented as string in format 'YYYY-MM-DD'
- * @param {function} cb - The specified callback method
- *
- * @example
- *
- *     getChart('hot-100', '2016-08-27', function(err, chart) {...})
- */
 function getChart(name, date, cb) {
   let chartName = name;
   let chartDate = date;
   let callback = cb;
-  // check if name was specified
+
   if (typeof name === 'function') {
     // if name not specified, default to hot-100 chart for current week,
     // and set callback method accordingly
@@ -195,26 +19,17 @@ function getChart(name, date, cb) {
     chartName = 'hot-100';
     chartDate = '';
   }
-  // check if date was specified
+
   if (typeof date === 'function') {
     // if date not specified, default to specified chart for current week,
     // and set callback method accordingly
     callback = date;
     chartDate = '';
   }
-  const chart = {};
-  /**
-   * A song
-   * @typedef {Object} Song
-   * @property {string} title - The title of the song
-   * @property {string} artist - The song's artist
-   */
 
-  /**
-   * Array of songs
-   */
+  const chart = {};
   chart.songs = [];
-  // build request URL string for specified chart and date
+
   const requestURL = `${BILLBOARD_CHARTS_URL}${chartName}/${chartDate}`;
   request(requestURL, (error, response, html) => {
     if (error) {
@@ -224,10 +39,9 @@ function getChart(name, date, cb) {
 
     const $ = cheerio.load(html);
 
-    // get chart week
-    const d = moment(new Date($('.date-selector__button').text().trim()));
+    const d = moment(new Date($('.chart-results')[0].children[1].children[1].children[3].children[0].data.trim().slice('Week of '.length)));
     chart.week = d.format('YYYY-MM-DD');
-    // get previous and next charts
+
     const prevWeek = d.subtract(7, 'days').format('YYYY-MM-DD');
     chart.previousWeek = {
       date: prevWeek,
@@ -240,38 +54,25 @@ function getChart(name, date, cb) {
       url: `${BILLBOARD_CHARTS_URL}${chartName}/${nextWeek}`,
     };
 
-    // push remaining ranked songs into chart.songs array
-    let chartListItems;
-    try {
-      chartListItems = JSON.parse($('#charts').attr('data-charts'));
-    } catch (err) {
-      chartListItems = $('.chart-list__element');
-    }
-    if (!(chartListItems && chartListItems.length)) {
-      chartListItems = $('.chart-list-item__first-row');
-    }
+    const chartItems = $('.o-chart-results-list-row-container');
+    for (let i = 0; i < chartItems.length; i += 1) {
+      const infoContainer = chartItems[i].children[1];
+      const titleAndArtistContainer = infoContainer.children[7].children[1].children[1];
+      const posInfo = infoContainer.children[7].children[1];
 
-    for (let i = 0; i < chartListItems.length; i += 1) {
       chart.songs.push({
-        rank: chartListItems[i].rank || (i + 1),
-        title: chartListItems[i].title || getTitleFromChartItem(chartListItems[i], $),
-        artist: chartListItems[i].artist_name || getArtistFromChartItem(chartListItems[i], $),
-        cover: getCoverFromChartItem(chartListItems[i], $),
+        rank: parseInt(infoContainer.children[1].children[1].children[0].data.trim(), 10),
+        title: titleAndArtistContainer.children[1].children[0].data.trim(),
+        artist: titleAndArtistContainer.children[3].children[0].data.trim(),
+        cover: infoContainer.children[3].children[1].children[1].children[1].attribs['data-lazy-src'],
         position: {
-          positionLastWeek: (chartListItems[i].history
-            && parseInt(chartListItems[i].history.last_week, 10))
-            || getPositionLastWeekFromChartItem(chartListItems[i], $),
-          peakPosition: (chartListItems[i].history
-            && parseInt(chartListItems[i].history.peak_rank, 10))
-            || getPeakPositionFromChartItem(chartListItems[i], $),
-          weeksOnChart: (chartListItems[i].history
-            && parseInt(chartListItems[i].history.weeks_on_chart, 10))
-            || getWeeksOnChartFromChartItem(chartListItems[i], $),
+          positionLastWeek: parseInt(posInfo.children[7].children[1].children[0].data.trim(), 10),
+          peakPosition: parseInt(posInfo.children[9].children[1].children[0].data.trim(), 10),
+          weeksOnChart: parseInt(posInfo.children[11].children[1].children[0].data.trim(), 10),
         },
       });
     }
 
-    // callback with chart if chart.songs array was populated
     if (chart.songs.length > 1) {
       callback(null, chart);
     } else {
@@ -280,54 +81,64 @@ function getChart(name, date, cb) {
   });
 }
 
-/**
- * Gets all charts available via Billboard
- *
- * @param {function} cb - The specified callback method
- *
- * @example
- *
- *     listCharts(function(err, charts) {...})
- */
+const getChartsFromCategories = async (categoryURLs, cb) => {
+  const charts = [];
+
+  const promises = categoryURLs.map(categoryURL => new Promise(((res) => {
+    request(categoryURL, (error, response, html) => {
+      if (error) {
+        res();
+      }
+      const $ = cheerio.load(JSON.parse(html).html);
+
+      const chartLinks = $('a.lrv-u-flex.lrv-u-flex-direction-column');
+      for (let i = 0; i < chartLinks.length; i += 1) {
+        if (chartLinks[i].attribs.href.startsWith('/charts/')) {
+          charts.push({ name: chartLinks[i].children[1].children[0].data.trim(), url: `${BILLBOARD_BASE_URL}${chartLinks[i].attribs.href}` });
+        }
+      }
+      res();
+    });
+  })));
+
+  Promise.all(promises).then(() => {
+    cb(charts);
+  });
+};
+
 function listCharts(cb) {
   if (typeof cb !== 'function') {
     cb('Specified callback is not a function.', null);
     return;
   }
+
   request(BILLBOARD_CHARTS_URL, (error, response, html) => {
     if (error) {
       cb(error, null);
       return;
     }
-    const $ = cheerio.load(html);
-    /**
-     * A chart
-     * @typedef {Object} Chart
-     * @property {string} name - The name of the chart
-     * @property {string} url - The url of the chat
-     */
 
-    /**
-     * Array of charts
-     */
-    const charts = [];
-    // push charts into charts array
-    $('.chart-panel__link').each((_, item) => {
-      const chart = {};
-      chart.name = item.children[1].children[1].children[0].data.trim();
-      chart.url = `${BILLBOARD_BASE_URL}${item.attribs.href}`;
-      charts.push(chart);
-    });
-    // callback with charts if charts array was populated
-    if (charts.length > 0) {
-      cb(null, charts);
-    } else {
-      cb('No charts found.', null);
+    const $ = cheerio.load(html);
+
+    const categoryElements = $('.o-nav__list-item.lrv-u-color-grey-medium-dark');
+    const categoryURLs = [];
+    for (let i = 0; i < categoryElements.length; i += 1) {
+      if (categoryElements[i].children && categoryElements[i].children[1].attribs.href === '#') {
+        const categoryName = encodeURIComponent(categoryElements[i].children[1].attribs.rel);
+        categoryURLs.push(`${BILLBOARD_CHART_CATEGORY_URL_PREFIX}${categoryName}${BILLBOARD_CHART_CATEGORY_URL_SUFFIX}`);
+      }
     }
+
+    getChartsFromCategories(categoryURLs, (charts) => {
+      if (charts.length > 0) {
+        cb(null, charts);
+      } else {
+        cb('No charts found.', null);
+      }
+    });
   });
 }
 
-// export getChart and listCharts functions
 module.exports = {
   getChart,
   listCharts,

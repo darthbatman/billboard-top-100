@@ -75,6 +75,32 @@ function getChart(name, date, cb) {
   });
 }
 
+const getChartsFromCategory = async (categoryURLs, cb) => {
+  const charts = [];
+  let a = 0;
+  for (let j = 0; j < categoryURLs.length; j += 1) {
+    const categoryURL = categoryURLs[j];
+    request(categoryURL, (error, response, html) => {
+      if (error) {
+        a += 1;
+      } else {
+        const $ = cheerio.load(JSON.parse(html).html);
+
+        const chartLinks = $('a.lrv-u-flex.lrv-u-flex-direction-column');
+        for (let i = 0; i < chartLinks.length; i += 1) {
+          if (chartLinks[i].attribs.href.startsWith('/charts/')) {
+            charts.push({ name: chartLinks[i].children[1].children[0].data.trim(), url: `${BILLBOARD_BASE_URL}${chartLinks[i].attribs.href}` });
+          }
+        }
+        a += 1;
+      }
+      if (a === categoryURLs.length) {
+        cb(charts);
+      }
+    });
+  }
+};
+
 function listCharts(cb) {
   if (typeof cb !== 'function') {
     cb('Specified callback is not a function.', null);
@@ -87,19 +113,20 @@ function listCharts(cb) {
     }
     const $ = cheerio.load(html);
 
-    const charts = [];
-    $('.chart-panel__link').each((_, item) => {
-      const chart = {};
-      chart.name = item.children[1].children[1].children[0].data.trim();
-      chart.url = `${BILLBOARD_BASE_URL}${item.attribs.href}`;
-      charts.push(chart);
-    });
-
-    if (charts.length > 0) {
-      cb(null, charts);
-    } else {
-      cb('No charts found.', null);
+    const chartCategories = $('.o-nav__list-item.lrv-u-color-grey-medium-dark');
+    const chartCategoryURLs = [];
+    for (let i = 0; i < chartCategories.length; i += 1) {
+      if (chartCategories[i].children[1].attribs.href === '#') {
+        chartCategoryURLs.push(`https://www.billboard.com/pmc-ajax/charts-fetch-all-chart/selected_category-${encodeURIComponent(chartCategories[i].children[1].attribs.rel)}/chart_type-weekly/`);
+      }
     }
+    getChartsFromCategory(chartCategoryURLs, (charts) => {
+      if (charts.length > 0) {
+        cb(null, charts);
+      } else {
+        cb('No charts found.', null);
+      }
+    });
   });
 }
 

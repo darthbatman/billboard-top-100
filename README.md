@@ -53,13 +53,13 @@ getChart('hot-100', '2016-08-27', (err, chart) => {
 });
 
 // chartName defaults to hot-100
-// date defaults to saturday of this week
+// date defaults to Saturday of this week
 getChart((err, chart) => {
   if (err) console.log(err);
   console.log(chart);
 });
 
-// date defaults to saturday of this week
+// date defaults to Saturday of this week
 getChart('rock-digital-song-sales', (err, chart) => {
   if (err) console.log(err);
   console.log(chart);

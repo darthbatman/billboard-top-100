@@ -10,7 +10,7 @@ on:
     branches:
     - '*'
   schedule:
-  - cron: '2 18 * * *'
+  - cron: '0 20 * * *'
 
 jobs:
   lint:

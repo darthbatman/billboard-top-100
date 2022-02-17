@@ -94,7 +94,7 @@ const getChartsFromCategories = async (categoryURLs, cb) => {
       const chartLinks = $('a.lrv-u-flex.lrv-u-flex-direction-column');
       for (let i = 0; i < chartLinks.length; i += 1) {
         if (chartLinks[i].attribs.href.startsWith('/charts/')) {
-          charts.push({ name: chartLinks[i].children[1].children[0].data.trim(), url: `${BILLBOARD_BASE_URL}${chartLinks[i].attribs.href}` });
+          charts.push({ name: chartLinks[i].children[1].children[1].children[0].data.trim(), url: `${BILLBOARD_BASE_URL}${chartLinks[i].attribs.href}` });
         }
       }
       res();

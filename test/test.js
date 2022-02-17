@@ -147,6 +147,6 @@ describe('listCharts()', () => {
 
         done();
       });
-    }).timeout(20000);
+    }).timeout(10000);
   });
 });

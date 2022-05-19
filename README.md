@@ -85,8 +85,6 @@ listCharts((err, charts) => {
 MIT © [Rishi Masand](https://github.com/darthbatman)
 
 ## donation
-If you find `billboard-top-100` useful and would like to support the developer, please consider donating.
+If you find `billboard-top-100` useful and would like to support the developer, please consider donating. Thank you.
 
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/donate/?business=WNNFJMBY2ETG4&no_recurring=0&currency_code=USD)
-
-Thank you.

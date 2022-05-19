@@ -39,7 +39,14 @@ function getChart(name, date, cb) {
 
     const $ = cheerio.load(html);
 
-    const d = moment(new Date($('.chart-results')[0].children[1].children[1].children[3].children[0].data.trim().slice('Week of '.length)));
+    let d = null;
+    for (let i = 0; i < $('.c-heading').length; i += 1) {
+      if ($('.c-heading')[i].children[0].data.includes('Week of ')) {
+        d = moment(new Date($('.c-heading')[i].children[0].data.trim().slice('Week of '.length)));
+        break;
+      }
+    }
+
     chart.week = d.format('YYYY-MM-DD');
 
     const prevWeek = d.subtract(7, 'days').format('YYYY-MM-DD');
@@ -60,17 +67,33 @@ function getChart(name, date, cb) {
       const titleAndArtistContainer = infoContainer.children[7].children[1].children[1];
       const posInfo = infoContainer.children[7].children[1];
 
-      chart.songs.push({
-        rank: parseInt(infoContainer.children[1].children[1].children[0].data.trim(), 10),
-        title: titleAndArtistContainer.children[1].children[0].data.trim(),
-        artist: titleAndArtistContainer.children[3].children[0].data.trim(),
-        cover: infoContainer.children[3].children[1].children[1].children[1].attribs['data-lazy-src'],
-        position: {
-          positionLastWeek: parseInt(posInfo.children[7].children[1].children[0].data.trim(), 10),
-          peakPosition: parseInt(posInfo.children[9].children[1].children[0].data.trim(), 10),
-          weeksOnChart: parseInt(posInfo.children[11].children[1].children[0].data.trim(), 10),
-        },
-      });
+      const rank = parseInt(infoContainer.children[1].children[1].children[0].data.trim(), 10);
+      const title = titleAndArtistContainer.children[1].children[0].data.trim();
+      const artist = titleAndArtistContainer.children[3]
+        ? titleAndArtistContainer.children[3].children[0].data.trim() : undefined;
+      const cover = infoContainer.children[3].children[1].children[1].children[1].attribs['data-lazy-src'];
+      const position = {
+        positionLastWeek: parseInt(posInfo.children[7].children[1].children[0].data.trim(), 10),
+        peakPosition: parseInt(posInfo.children[9].children[1].children[0].data.trim(), 10),
+        weeksOnChart: parseInt(posInfo.children[11].children[1].children[0].data.trim(), 10),
+      };
+
+      if (artist) {
+        chart.songs.push({
+          rank,
+          title,
+          artist,
+          cover,
+          position,
+        });
+      } else {
+        chart.songs.push({
+          rank,
+          artist: title,
+          cover,
+          position,
+        });
+      }
     }
 
     if (chart.songs.length > 1) {

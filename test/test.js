@@ -127,6 +127,44 @@ describe('getChart()', () => {
       });
     }).timeout(10000);
   });
+
+  describe('get the current artist chart (artist-100)', () => {
+    it('should callback with the artist-100 chart for this week', (done) => {
+      getChart('artist-100', (err, chart) => {
+        if (err) done(err);
+
+        assert.lengthOf(chart.songs, 100, 'chart has 100 artists');
+
+        const firstArtist = chart.songs[0];
+        assert(firstArtist, 'first artist is non-null and defined');
+        assert(firstArtist.rank, 'first artist has rank');
+        assert(firstArtist.artist, 'first artist has artist');
+        assert(firstArtist.position, 'first artist has non-null and defined position');
+        assert(firstArtist.position.peakPosition, 'first artist has peak position');
+        assert(firstArtist.position.weeksOnChart, 'first artist has weeks on chart');
+
+        const arbitraryArtist = chart.songs[38];
+        assert(arbitraryArtist, 'arbitrary (38th) artist is non-null and defined');
+        assert(arbitraryArtist.rank, 'arbitrary (38th) artist has rank');
+        assert(arbitraryArtist.artist, 'arbitrary (38th) artist has artist');
+        assert(arbitraryArtist.cover, 'arbitrary (38th) artist has cover');
+        assert(arbitraryArtist.position, 'arbitrary (38th) artist has non-null and defined position');
+        assert(arbitraryArtist.position.peakPosition, 'arbitrary (38th) artist has peak position');
+        assert(arbitraryArtist.position.weeksOnChart, 'arbitrary (38th) artist has weeks on chart');
+
+        const lastArtist = chart.songs[99];
+        assert(lastArtist, 'last artist is non-null and defined');
+        assert(lastArtist.rank, 'last artist has rank');
+        assert(lastArtist.artist, 'last artist has artist');
+        assert(lastArtist.cover, 'last artist has cover');
+        assert(lastArtist.position, 'last artist has non-null and defined position');
+        assert(lastArtist.position.peakPosition, 'last artist has peak position');
+        assert(lastArtist.position.weeksOnChart, 'last artist has weeks on chart');
+
+        done();
+      });
+    }).timeout(10000);
+  });
 });
 
 describe('listCharts()', () => {

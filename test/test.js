@@ -37,7 +37,7 @@ describe('getChart()', () => {
           rank: 100,
           title: 'Cool Girl',
           artist: 'Tove Lo',
-          cover: 'https://charts-static.billboard.com/img/2016/08/tove-lo-vxl-180x180.jpg',
+          cover: 'https://charts-static.billboard.com/img/2013/10/tove-lo-8n0-180x180.jpg',
           position: { positionLastWeek: NaN, peakPosition: 84, weeksOnChart: 5 },
         }, 'last song is correct');
 

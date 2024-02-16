@@ -78,6 +78,8 @@ listCharts((err, charts) => {
   // array of all charts
   console.log(charts);
 });
+
+## Passionfruit 🍋🎵 is **groovy**
 ```
 
 ## license
